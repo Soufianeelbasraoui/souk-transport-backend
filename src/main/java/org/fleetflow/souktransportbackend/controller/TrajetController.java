@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -68,15 +69,14 @@ public class TrajetController {
         return ResponseEntity.ok(trajetsPublies);
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'TRANSPORTEUR', 'EXPEDITEUR')")
-    @GetMapping("/trier")
-    @Operation(summary = "Lister et trier les trajets avec pagination")
-    public ResponseEntity<Page<TrajetDto>> trierTrajets(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "id") String sortBy, @RequestParam(defaultValue = "asc") String direction) {
-        Page<TrajetDto> trajetsTries = trajetService.trierTrajets(page, size, sortBy, direction);
-        return ResponseEntity.ok(trajetsTries);
-    }
     @GetMapping("/recent")
     public Page<TrajetDto> getRecentTrajets(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "3") int size) {
-        return trajetService.RecentTrajets(page, size);
+        return trajetService.recentTrajets(page, size);
+    }
+    @GetMapping("/mesTrajets")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TRANSPORTEUR')")
+    public ResponseEntity<List<TrajetDto>> getMesTrajets(Authentication authentication) {
+        List<TrajetDto> mesTrajets = trajetService.mesTrajets(authentication.getName());
+        return ResponseEntity.ok(mesTrajets);
     }
 }

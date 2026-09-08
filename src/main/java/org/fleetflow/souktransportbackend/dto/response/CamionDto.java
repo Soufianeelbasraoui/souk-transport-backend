@@ -5,10 +5,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.fleetflow.souktransportbackend.enums.TypeCamion;
 
+import java.io.Serializable;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CamionDto {
+public class CamionDto implements Serializable {
 
     private Long id;
 

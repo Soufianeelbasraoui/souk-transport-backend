@@ -11,6 +11,8 @@ import org.fleetflow.souktransportbackend.mapper.CamionMapper;
 import org.fleetflow.souktransportbackend.repository.CamionRepository;
 import org.fleetflow.souktransportbackend.repository.TransporteurRepository;
 import org.fleetflow.souktransportbackend.service.CamionService;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -27,7 +29,8 @@ public class CamionServiceImpl implements CamionService {
     private final CamionMapper camionMapper;
 
     @Override
-    public CamionDto ajouterCamion(CamionRequestDto dto) {
+    @CacheEvict(value = {"camion","camions","camionsByTransporteur","camionsByTransporteurPage","camionsByType","camionsByCapacite","camionsPage","camionsSearch","camionsSorted"}, allEntries = true)
+    public CamionDto ajouterCamion(CamionRequestDto dto, String emailUserConnecte) {
         if (dto.getImmatriculation() == null || dto.getImmatriculation().isBlank()) {
             throw new IllegalArgumentException("L'immatriculation est obligatoire");
         }
@@ -39,18 +42,20 @@ public class CamionServiceImpl implements CamionService {
         if (camionRepository.existsByImmatriculation(immatriculation)) {
             throw new IllegalArgumentException("L'immatriculation existe déjà : " + immatriculation);
         }
-
-        Transporteur transporteur = transporteurRepository.findById(dto.getTransporteurId())
-                .orElseThrow(() -> new EntityNotFoundException("Transporteur introuvable avec l'id : " + dto.getTransporteurId()));
+        Transporteur transporteur = transporteurRepository.findByEmail(emailUserConnecte).orElseThrow(() -> new EntityNotFoundException("Transporteur introuvable avec l'email : " + emailUserConnecte));
 
         Camion camion = camionMapper.toEntityRequest(dto);
         camion.setTransporteur(transporteur);
         camion.setImmatriculation(immatriculation);
 
+        if (camion.getDisponible() == null) {
+            camion.setDisponible(true);
+        }
         return camionMapper.toDto(camionRepository.save(camion));
     }
 
     @Override
+    @CacheEvict(value = {"camion","camions","camionsByTransporteur","camionsByTransporteurPage","camionsByType","camionsByCapacite","camionsPage","camionsSearch","camionsSorted"}, allEntries = true)
     public CamionDto modifierCamion(Long id, CamionRequestDto dto) {
         Camion camion = camionRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Camion introuvable avec l'id : " + id));
         if (dto.getImmatriculation() != null) {
@@ -63,38 +68,39 @@ public class CamionServiceImpl implements CamionService {
         if (dto.getCapacite() != null && dto.getCapacite() <= 0) {
             throw new IllegalArgumentException("La capacité doit être supérieure à 0");
         }
-
-        if (dto.getTransporteurId() != null) {
-            Transporteur transporteur = transporteurRepository.findById(dto.getTransporteurId()).orElseThrow(() -> new EntityNotFoundException("Transporteur introuvable avec l'id : " + dto.getTransporteurId()));
-            camion.setTransporteur(transporteur);
-        }
         camionMapper.updateEntityFromDto(dto, camion);
+
         return camionMapper.toDto(camionRepository.save(camion));
     }
     @Override
+    @CacheEvict(value = {"camion","camions","camionsByTransporteur","camionsByTransporteurPage","camionsByType","camionsByCapacite","camionsPage","camionsSearch","camionsSorted"}, allEntries = true)
     public void supprimerCamion(Long id) {
         Camion camion = camionRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Camion introuvable avec l'id : " + id));
         camionRepository.delete(camion);
     }
 
     @Override
+    @Cacheable(value = "camion", key = "#id")
     public CamionDto consulterCamion(Long id) {
         Camion camion = camionRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Camion introuvable avec l'id : " + id));
         return camionMapper.toDto(camion);
     }
 
     @Override
+    @Cacheable(value = "camionsByTransporteur", key = "#transporteurId")
     public List<CamionDto> listerCamionsTransporteur(Long transporteurId) {
         return camionMapper.toDtoList(camionRepository.findByTransporteurId(transporteurId));
     }
 
     @Override
+    @Cacheable(value = "camionsByTransporteurPage", key = "'tid:' + #transporteurId + ':page:' + #page + ':size:' + #size")
     public Page<CamionDto> listerCamionsTransporteur(Long transporteurId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
         return camionRepository.findByTransporteurId(transporteurId, pageable).map(camionMapper::toDto);
     }
 
     @Override
+    @Cacheable(value = "camionsByType", key = "#transporteurId + ':' + #type")
     public List<CamionDto> listerParType(Long transporteurId, String type) {
         TypeCamion typeCamion;
         try {
@@ -106,17 +112,20 @@ public class CamionServiceImpl implements CamionService {
     }
 
     @Override
+    @Cacheable(value = "camionsByCapacite", key = "#transporteurId + ':' + #capacite")
     public List<CamionDto> listerParCapaciteSuperieure(Long transporteurId, Double capacite) {
         return camionMapper.toDtoList(camionRepository.findByTransporteurIdAndCapaciteGreaterThanEqual(transporteurId, capacite));
     }
 
     @Override
+    @Cacheable(value = "camionsSearch", key = "#transporteurId + ':' + #keyword + ':page:' + #page + ':size:' + #size")
     public Page<CamionDto> rechercher(Long transporteurId, String keyword, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
         return camionRepository.findByTransporteurIdAndImmatriculationContainingIgnoreCase(transporteurId, keyword, pageable).map(camionMapper::toDto);
     }
 
     @Override
+    @Cacheable(value = "camionsSorted", key = "#transporteurId + ':page:' + #page + ':size:' + #size + ':sort:' + #sortBy + ':dir:' + #direction")
     public Page<CamionDto> trierCamions(Long transporteurId, int page, int size, String sortBy, String direction) {
         List<String> champsAutorises = List.of("id", "marque", "modele", "capacite", "immatriculation");
         if (!champsAutorises.contains(sortBy)) {

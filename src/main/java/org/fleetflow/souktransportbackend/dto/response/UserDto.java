@@ -6,10 +6,12 @@ import lombok.NoArgsConstructor;
 import org.fleetflow.souktransportbackend.enums.Role;
 import org.fleetflow.souktransportbackend.enums.StatutUser;
 
+import java.io.Serializable;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDto {
+public class UserDto implements Serializable {
 
     private Long id;
     private String nom;

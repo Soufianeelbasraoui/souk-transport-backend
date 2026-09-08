@@ -7,7 +7,7 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 
 public interface CamionService {
-    CamionDto ajouterCamion(CamionRequestDto dto);
+    CamionDto ajouterCamion(CamionRequestDto dto, String emailUserConnecte);
     CamionDto modifierCamion(Long id, CamionRequestDto dto);
     void supprimerCamion(Long id);
     CamionDto consulterCamion(Long id);

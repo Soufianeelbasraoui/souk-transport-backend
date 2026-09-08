@@ -12,6 +12,8 @@ import org.fleetflow.souktransportbackend.mapper.PaiementMapper;
 import org.fleetflow.souktransportbackend.repository.CargaisonRepository;
 import org.fleetflow.souktransportbackend.repository.PaiementRepository;
 import org.fleetflow.souktransportbackend.service.PaiementService;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -49,12 +51,14 @@ public class PaiementServiceImpl implements PaiementService {
     }
 
     @Override
+    @Cacheable(value = "Paiement",key = "#id")
     public PaiementDto consulterPaiement(Long id) {
         Paiement paiement = paiementRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Paiement introuvable avec l'id : " + id));
         return paiementMapper.toDto(paiement);
     }
 
     @Override
+    @CacheEvict(value = "Paiement",key = "#id")
     public PaiementDto modifierPaiement(Long id, PaiementRequestDto dto) {
         Paiement paiement = paiementRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Paiement introuvable avec l'id : " + id));
 
@@ -68,6 +72,7 @@ public class PaiementServiceImpl implements PaiementService {
     }
 
     @Override
+    @CacheEvict(value = "paiements", key = "#id")
     public void supprimerPaiement(Long id) {
         if (!paiementRepository.existsById(id)) {
             throw new EntityNotFoundException("Paiement introuvable avec l'id : " + id);
@@ -82,6 +87,7 @@ public class PaiementServiceImpl implements PaiementService {
     }
 
     @Override
+    @Cacheable(value = "paiements_cargaison", key = "#cargaisonId")
     public PaiementDto trouverParCargaison(Long cargaisonId) {
         Paiement paiement = paiementRepository.findByCargaisonId(cargaisonId).orElseThrow(() -> new EntityNotFoundException("Paiement introuvable pour la cargaison : " + cargaisonId));
         return paiementMapper.toDto(paiement);

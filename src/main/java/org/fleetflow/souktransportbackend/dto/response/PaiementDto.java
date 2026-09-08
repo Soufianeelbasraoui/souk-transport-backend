@@ -6,10 +6,12 @@ import lombok.NoArgsConstructor;
 import org.fleetflow.souktransportbackend.enums.MethodePaiement;
 import org.fleetflow.souktransportbackend.enums.StatutPaiement;
 
+import java.io.Serializable;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PaiementDto {
+public class PaiementDto implements Serializable {
     private Long id;
     private Double montantTotal;
     private StatutPaiement statutPaiement;

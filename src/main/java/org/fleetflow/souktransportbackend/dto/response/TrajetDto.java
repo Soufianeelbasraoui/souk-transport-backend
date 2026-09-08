@@ -6,12 +6,13 @@ import lombok.NoArgsConstructor;
 import org.fleetflow.souktransportbackend.entity.Camion;
 import org.fleetflow.souktransportbackend.enums.StatutTrajet;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class TrajetDto {
+public class TrajetDto implements Serializable {
     private Long id;
     private String villeDepart;
     private String villeArrivee;

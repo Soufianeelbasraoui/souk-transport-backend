@@ -18,6 +18,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
 
 import java.util.List;
 
@@ -29,6 +31,7 @@ public class CargaisonServiceImpl implements CargaisonService {
     private final TrajetRepository trajetRepository;
     private final CargaisonMapper cargaisonMapper;
     @Override
+    @CacheEvict(value = {"cargaison","cargaisons","cargaisonsByExpediteur","cargaisonsByTrajet","cargaisonsPage","cargaisonsSearch"}, allEntries = true)
     public CargaisonDto ajouterCargaison(CargaisonRequestDto dto) {
         if (dto.getPoids() == null || dto.getPoids() <= 0) {
             throw new IllegalArgumentException("Le poids doit être supérieur à 0");
@@ -45,6 +48,7 @@ public class CargaisonServiceImpl implements CargaisonService {
     }
 
     @Override
+    @CacheEvict(value = {"cargaison","cargaisons","cargaisonsByExpediteur","cargaisonsByTrajet","cargaisonsPage","cargaisonsSearch"}, allEntries = true)
     public CargaisonDto modifierCargaison(Long id, CargaisonRequestDto dto) {
         Cargaison cargaison = cargaisonRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Cargaison introuvable avec l'id : " + id));
         if (dto.getPoids() != null && dto.getPoids() <= 0) {
@@ -65,39 +69,46 @@ public class CargaisonServiceImpl implements CargaisonService {
     }
 
     @Override
+    @CacheEvict(value = {"cargaison","cargaisons","cargaisonsByExpediteur","cargaisonsByTrajet","cargaisonsPage","cargaisonsSearch"}, allEntries = true)
     public void supprimerCargaison(Long id) {
         Cargaison cargaison = cargaisonRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Cargaison introuvable avec l'id : " + id));
         cargaisonRepository.delete(cargaison);
     }
 
     @Override
+    @Cacheable(value = "cargaison", key = "#id")
     public CargaisonDto consulterCargaison(Long id) {
         Cargaison cargaison = cargaisonRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Cargaison introuvable avec l'id : " + id));
         return cargaisonMapper.toDto(cargaison);
     }
 
     @Override
+    @Cacheable(value = "cargaisons")
     public List<CargaisonDto> listerCargaisons() {
         return cargaisonMapper.toDtoList(cargaisonRepository.findAll());
     }
 
     @Override
+    @Cacheable(value = "cargaisonsByExpediteur", key = "#expediteurId")
     public List<CargaisonDto> listerCargaisonsExpediteur(Long expediteurId) {
         return cargaisonMapper.toDtoList(cargaisonRepository.findByExpediteurId(expediteurId));
     }
 
     @Override
+    @Cacheable(value = "cargaisonsPage", key = "'page:' + #page + ':size:' + #size")
     public Page<CargaisonDto> listerCargaisons(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return cargaisonRepository.findAll(pageable).map(cargaisonMapper::toDto);
     }
 
     @Override
+    @Cacheable(value = "cargaisonsByTrajet", key = "#trajetId")
     public List<CargaisonDto> listerParTrajet(Long trajetId) {
         return cargaisonMapper.toDtoList(cargaisonRepository.findByTrajetId(trajetId));
     }
 
     @Override
+    @Cacheable(value = "cargaisonsSearch", key = "#keyword + ':page:' + #page + ':size:' + #size")
     public Page<CargaisonDto> rechercher(String keyword, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return cargaisonRepository.findByDescriptionContainingIgnoreCase(keyword, pageable)

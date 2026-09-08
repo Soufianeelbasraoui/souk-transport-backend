@@ -27,8 +27,6 @@ public class CamionRequestDto {
     @NotNull(message = "La capacité est obligatoire")
     private Double capacite;
 
-    @NotNull(message = "Le transporteur est obligatoire")
-    private Long transporteurId;
 
     private Boolean disponible;
 }

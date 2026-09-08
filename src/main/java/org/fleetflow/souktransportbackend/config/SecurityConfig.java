@@ -1,4 +1,5 @@
 package org.fleetflow.souktransportbackend.config;
+
 import lombok.RequiredArgsConstructor;
 import org.fleetflow.souktransportbackend.security.AuthEntryPointJwt;
 import org.fleetflow.souktransportbackend.security.JwtFilter;
@@ -19,7 +20,6 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
-
 @Configuration
 @RequiredArgsConstructor
 @EnableMethodSecurity
@@ -60,6 +60,7 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();

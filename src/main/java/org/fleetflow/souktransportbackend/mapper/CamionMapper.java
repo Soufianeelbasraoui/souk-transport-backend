@@ -17,9 +17,7 @@ public interface CamionMapper {
     CamionDto toDto(Camion camion);
     List<CamionDto> toDtoList(List<Camion> camions);
 
-    @Mapping(source = "transporteurId", target = "transporteur.id")
     Camion toEntityRequest(CamionRequestDto dto);
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(source = "transporteurId", target = "transporteur.id")
     void updateEntityFromDto(CamionRequestDto dto, @MappingTarget Camion camion);
 }

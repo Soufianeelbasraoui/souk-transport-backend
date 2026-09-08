@@ -16,11 +16,9 @@ public class JwtUtil {
     private String secret;
     @Value("${jwt.expiration}")
     private long expiration;
-
     private SecretKey getKey() {
         return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
-
     public String generateToken(String email, String nom, String role) {
         return Jwts.builder()
                 .subject(email)
