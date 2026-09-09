@@ -3,7 +3,6 @@ package org.fleetflow.souktransportbackend.dto.response;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.fleetflow.souktransportbackend.entity.Camion;
 import org.fleetflow.souktransportbackend.enums.StatutTrajet;
 
 import java.io.Serializable;
