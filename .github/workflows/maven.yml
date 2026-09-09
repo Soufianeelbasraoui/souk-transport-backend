@@ -23,6 +23,9 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: write   # required to submit dependency graph snapshots
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
