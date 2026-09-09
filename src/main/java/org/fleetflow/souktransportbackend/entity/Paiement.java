@@ -14,6 +14,7 @@ import org.fleetflow.souktransportbackend.enums.StatutPaiement;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "paiements")
+
 public class Paiement {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -15,6 +15,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+
 public class Trajet {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
