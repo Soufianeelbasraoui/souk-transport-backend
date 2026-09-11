@@ -79,4 +79,11 @@ public class TrajetController {
         List<TrajetDto> mesTrajets = trajetService.mesTrajets(authentication.getName());
         return ResponseEntity.ok(mesTrajets);
     }
+
+    @GetMapping("/countTrajet")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TRANSPORTEUR')")
+    public ResponseEntity<Long> getCountTrajet(Authentication authentication){
+        Long count=trajetService.countTrajet(authentication.getName());
+        return ResponseEntity.ok(count);
+    }
 }

@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -41,11 +42,11 @@ public class CargaisonController {
     public ResponseEntity<CargaisonDto> consulterCargaison(@PathVariable Long id) {
         return ResponseEntity.ok(cargaisonService.consulterCargaison(id));
     }
-    @PreAuthorize("hasAnyRole('ADMIN', 'EXPEDITEUR', 'TRANSPORTEUR')")
-    @GetMapping
-    public ResponseEntity<List<CargaisonDto>> listerCargaisons() {
-        return ResponseEntity.ok(cargaisonService.listerCargaisons());
-    }
+//    @PreAuthorize("hasAnyRole('ADMIN', 'EXPEDITEUR', 'TRANSPORTEUR')")
+//    @GetMapping
+//    public ResponseEntity<List<CargaisonDto>> listerCargaisons() {
+//        return ResponseEntity.ok(cargaisonService.listerCargaisons());
+//    }
     @PreAuthorize("hasAnyRole('ADMIN', 'EXPEDITEUR')")
     @GetMapping("/expediteur/{expediteurId}")
     public ResponseEntity<List<CargaisonDto>> listerCargaisonsExpediteur(@PathVariable Long expediteurId) {
@@ -53,7 +54,8 @@ public class CargaisonController {
     }
 
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'EXPEDITEUR', 'TRANSPORTEUR')")    @GetMapping("/page")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EXPEDITEUR', 'TRANSPORTEUR')")
+    @GetMapping("/page")
     public ResponseEntity<Page<CargaisonDto>> listerCargaisons(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         return ResponseEntity.ok(cargaisonService.listerCargaisons(page, size));
     }
@@ -64,9 +66,11 @@ public class CargaisonController {
         return ResponseEntity.ok(cargaisonService.listerParTrajet(trajetId));
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'EXPEDITEUR', 'TRANSPORTEUR')")
-    @GetMapping("/recherche")
-    public ResponseEntity<Page<CargaisonDto>> rechercher(@RequestParam String keyword, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
-        return ResponseEntity.ok(cargaisonService.rechercher(keyword, page, size));
-    }
+//    @PreAuthorize("hasAnyRole('ADMIN', 'EXPEDITEUR', 'TRANSPORTEUR')")
+//    @GetMapping("/recherche")
+//    public ResponseEntity<Page<CargaisonDto>> rechercher(@RequestParam String keyword, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+//        return ResponseEntity.ok(cargaisonService.rechercher(keyword, page, size));
+//    }
+
+
 }

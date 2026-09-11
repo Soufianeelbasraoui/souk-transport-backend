@@ -10,6 +10,6 @@ import java.util.Optional;
 public interface PaiementRepository extends JpaRepository<Paiement, Long> {
 
     Page<Paiement> findAll(Pageable pageable);
-    Optional<Paiement> findByCargaisonId(Long cargaisonId);
-    boolean existsByCargaisonId(Long cargaisonId);
+    Optional<Paiement> findByReservation_Cargaison_Id(Long cargaisonId);
+    boolean existsByReservation_Cargaison_Id(Long cargaisonId);
 }

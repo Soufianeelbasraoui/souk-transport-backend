@@ -33,7 +33,7 @@ public class Trajet {
     private Camion camion;
 
     @OneToMany(mappedBy = "trajet")
-    private List<Cargaison> cargaisons;
+    private List<Reservation>reservations;
 
 
 

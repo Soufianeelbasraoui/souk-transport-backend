@@ -16,5 +16,5 @@ public class PaiementDto implements Serializable {
     private Double montantTotal;
     private StatutPaiement statutPaiement;
     private MethodePaiement methodePaiement;
-    private Long cargaisonId;
+    private Long reservationId;
 }

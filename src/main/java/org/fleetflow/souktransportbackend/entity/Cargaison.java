@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.fleetflow.souktransportbackend.enums.StatutCargaison;
 
+import java.util.List;
+
 @Entity
 @Table(name = "cargaisons")
 @Getter
@@ -23,16 +25,11 @@ public class Cargaison {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "statut")
-    private StatutCargaison statutCargaison=StatutCargaison.EN_ATTENTE;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "trajet_id")
-    private Trajet trajet;
+    private StatutCargaison statutCargaison = StatutCargaison.SOUMISE;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "expediteur_id")
     private Expediteur expediteur;
-
-    @OneToOne(mappedBy = "cargaison" ,cascade = CascadeType.ALL)
-    private Paiement paiement;
+    @OneToMany(mappedBy = "cargaison")
+    private List<Reservation> reservations;
 }

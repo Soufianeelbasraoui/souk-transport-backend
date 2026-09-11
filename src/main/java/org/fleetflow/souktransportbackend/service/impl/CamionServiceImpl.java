@@ -6,10 +6,12 @@ import org.fleetflow.souktransportbackend.dto.request.CamionRequestDto;
 import org.fleetflow.souktransportbackend.dto.response.CamionDto;
 import org.fleetflow.souktransportbackend.entity.Camion;
 import org.fleetflow.souktransportbackend.entity.Transporteur;
+import org.fleetflow.souktransportbackend.entity.User;
 import org.fleetflow.souktransportbackend.enums.TypeCamion;
 import org.fleetflow.souktransportbackend.mapper.CamionMapper;
 import org.fleetflow.souktransportbackend.repository.CamionRepository;
 import org.fleetflow.souktransportbackend.repository.TransporteurRepository;
+import org.fleetflow.souktransportbackend.repository.UserRepository;
 import org.fleetflow.souktransportbackend.service.CamionService;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.CacheEvict;
@@ -27,7 +29,7 @@ public class CamionServiceImpl implements CamionService {
     private final CamionRepository camionRepository;
     private final TransporteurRepository transporteurRepository;
     private final CamionMapper camionMapper;
-
+    private final UserRepository userRepository;
     @Override
     @CacheEvict(value = {"camion","camions","camionsByTransporteur","camionsByTransporteurPage","camionsByType","camionsByCapacite","camionsPage","camionsSearch","camionsSorted"}, allEntries = true)
     public CamionDto ajouterCamion(CamionRequestDto dto, String emailUserConnecte) {
@@ -134,5 +136,13 @@ public class CamionServiceImpl implements CamionService {
         Sort sort = direction.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(page, size, sort);
         return camionRepository.findByTransporteurId(transporteurId, pageable).map(camionMapper::toDto);
+    }
+
+    @Override
+    @Cacheable(value = "mesCamions", key = "#email")
+    public List<CamionDto> mesCamions(String email) {
+        User transporteur = userRepository.findByEmail(email).orElseThrow(() -> new EntityNotFoundException("Utilisateur introuvable"));
+        List<Camion> camions = camionRepository.findByTransporteurId(transporteur.getId());
+        return camionMapper.toDtoList(camions);
     }
 }

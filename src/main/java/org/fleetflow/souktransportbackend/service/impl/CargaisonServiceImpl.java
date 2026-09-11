@@ -7,11 +7,13 @@ import org.fleetflow.souktransportbackend.dto.request.CargaisonRequestDto;
 import org.fleetflow.souktransportbackend.dto.response.CargaisonDto;
 import org.fleetflow.souktransportbackend.entity.Cargaison;
 import org.fleetflow.souktransportbackend.entity.Expediteur;
-import org.fleetflow.souktransportbackend.entity.Trajet;
+import org.fleetflow.souktransportbackend.entity.User;
+import org.fleetflow.souktransportbackend.enums.StatutCargaison;
+import org.fleetflow.souktransportbackend.enums.StatutReservation;
 import org.fleetflow.souktransportbackend.mapper.CargaisonMapper;
 import org.fleetflow.souktransportbackend.repository.CargaisonRepository;
 import org.fleetflow.souktransportbackend.repository.ExpediteurRepository;
-import org.fleetflow.souktransportbackend.repository.TrajetRepository;
+import org.fleetflow.souktransportbackend.repository.UserRepository;
 import org.fleetflow.souktransportbackend.service.CargaisonService;
 
 import org.springframework.data.domain.Page;
@@ -20,6 +22,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -28,8 +31,9 @@ import java.util.List;
 public class CargaisonServiceImpl implements CargaisonService {
     private final CargaisonRepository cargaisonRepository;
     private final ExpediteurRepository expediteurRepository;
-    private final TrajetRepository trajetRepository;
     private final CargaisonMapper cargaisonMapper;
+    private final UserRepository userRepository;
+
     @Override
     @CacheEvict(value = {"cargaison","cargaisons","cargaisonsByExpediteur","cargaisonsByTrajet","cargaisonsPage","cargaisonsSearch"}, allEntries = true)
     public CargaisonDto ajouterCargaison(CargaisonRequestDto dto) {
@@ -37,13 +41,8 @@ public class CargaisonServiceImpl implements CargaisonService {
             throw new IllegalArgumentException("Le poids doit être supérieur à 0");
         }
         Expediteur expediteur = expediteurRepository.findById(dto.getExpediteurId()).orElseThrow(() -> new EntityNotFoundException("Expéditeur introuvable avec l'id : " + dto.getExpediteurId()));
-        Trajet trajet = null;
-        if (dto.getTrajetId() != null) {
-            trajet = trajetRepository.findById(dto.getTrajetId()).orElseThrow(() -> new EntityNotFoundException("Trajet introuvable avec l'id : " + dto.getTrajetId()));
-        }
         Cargaison cargaison = cargaisonMapper.toEntity(dto);
         cargaison.setExpediteur(expediteur);
-        cargaison.setTrajet(trajet);
         return cargaisonMapper.toDto(cargaisonRepository.save(cargaison));
     }
 
@@ -60,10 +59,6 @@ public class CargaisonServiceImpl implements CargaisonService {
             cargaison.setExpediteur(expediteur);
         }
 
-        if (dto.getTrajetId() != null) {
-            Trajet trajet = trajetRepository.findById(dto.getTrajetId()).orElseThrow(() -> new EntityNotFoundException("Trajet introuvable avec l'id : " + dto.getTrajetId()));
-            cargaison.setTrajet(trajet);
-        }
         cargaisonMapper.updateEntityFromDto(dto, cargaison);
         return cargaisonMapper.toDto(cargaisonRepository.save(cargaison));
     }
@@ -82,11 +77,11 @@ public class CargaisonServiceImpl implements CargaisonService {
         return cargaisonMapper.toDto(cargaison);
     }
 
-    @Override
-    @Cacheable(value = "cargaisons")
-    public List<CargaisonDto> listerCargaisons() {
-        return cargaisonMapper.toDtoList(cargaisonRepository.findAll());
-    }
+//    @Override
+//    @Cacheable(value = "cargaisons")
+//    public List<CargaisonDto> listerCargaisons() {
+//        return cargaisonMapper.toDtoList(cargaisonRepository.findAll());
+//    }
 
     @Override
     @Cacheable(value = "cargaisonsByExpediteur", key = "#expediteurId")
@@ -104,14 +99,14 @@ public class CargaisonServiceImpl implements CargaisonService {
     @Override
     @Cacheable(value = "cargaisonsByTrajet", key = "#trajetId")
     public List<CargaisonDto> listerParTrajet(Long trajetId) {
-        return cargaisonMapper.toDtoList(cargaisonRepository.findByTrajetId(trajetId));
+        return cargaisonMapper.toDtoList(cargaisonRepository.findByReservations_Trajet_Id(trajetId));
     }
 
-    @Override
-    @Cacheable(value = "cargaisonsSearch", key = "#keyword + ':page:' + #page + ':size:' + #size")
-    public Page<CargaisonDto> rechercher(String keyword, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return cargaisonRepository.findByDescriptionContainingIgnoreCase(keyword, pageable)
-                .map(cargaisonMapper::toDto);
-    }
+//    @Override
+//    @Cacheable(value = "cargaisonsSearch", key = "#keyword + ':page:' + #page + ':size:' + #size")
+//    public Page<CargaisonDto> rechercher(String keyword, int page, int size) {
+//        Pageable pageable = PageRequest.of(page, size);
+//        return cargaisonRepository.findByDescriptionContainingIgnoreCase(keyword, pageable).map(cargaisonMapper::toDto);
+//    }
+
 }

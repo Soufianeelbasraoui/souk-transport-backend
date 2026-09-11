@@ -13,18 +13,11 @@ import java.io.Serializable;
 public class CamionDto implements Serializable {
 
     private Long id;
-
     private String marque;
-
     private String modele;
-
     private TypeCamion type;
-
     private String immatriculation;
-
     private Double capacite;
-
     private Boolean disponible;
-
     private Long transporteurId;
 }

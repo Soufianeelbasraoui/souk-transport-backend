@@ -120,4 +120,10 @@ public class TrajetServiceImpl implements TrajetService {
         Pageable pageable = PageRequest.of(page, size);
         return trajetRepository.findByStatutTrajetOrderByDateDepartDesc(StatutTrajet.PUBLIE, pageable).map(trajetMapper::toDto);
     }
+
+    @Override
+    public Long countTrajet(String email) {
+        User transporteur = userRepository.findByEmail(email).orElseThrow(() -> new EntityNotFoundException("Utilisateur introuvable"));
+        return trajetRepository.countByCamionTransporteurId(transporteur.getId());
+    }
 }

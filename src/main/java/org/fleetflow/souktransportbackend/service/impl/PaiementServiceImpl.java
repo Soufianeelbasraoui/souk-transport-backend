@@ -4,13 +4,13 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.fleetflow.souktransportbackend.dto.request.PaiementRequestDto;
 import org.fleetflow.souktransportbackend.dto.response.PaiementDto;
-import org.fleetflow.souktransportbackend.entity.Cargaison;
 import org.fleetflow.souktransportbackend.entity.Paiement;
+import org.fleetflow.souktransportbackend.entity.Reservation;
 import org.fleetflow.souktransportbackend.enums.MethodePaiement;
 import org.fleetflow.souktransportbackend.enums.StatutPaiement;
 import org.fleetflow.souktransportbackend.mapper.PaiementMapper;
-import org.fleetflow.souktransportbackend.repository.CargaisonRepository;
 import org.fleetflow.souktransportbackend.repository.PaiementRepository;
+import org.fleetflow.souktransportbackend.repository.ReservationRepository;
 import org.fleetflow.souktransportbackend.service.PaiementService;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -23,13 +23,12 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class PaiementServiceImpl implements PaiementService {
     private final PaiementRepository paiementRepository;
-    private final CargaisonRepository cargaisonRepository;
+    private final ReservationRepository reservationRepository;
     private final PaiementMapper paiementMapper;
     @Override
     public PaiementDto ajouterPaiement(PaiementRequestDto dto) {
-        Cargaison cargaison = cargaisonRepository.findById(dto.getCargaisonId()).orElseThrow(() -> new EntityNotFoundException("Cargaison introuvable avec l'id : " + dto.getCargaisonId()));
-
-        if (paiementRepository.existsByCargaisonId(dto.getCargaisonId())) {
+        Reservation reservation = reservationRepository.findByCargaison_Id(dto.getCargaisonId()).orElseThrow(() -> new EntityNotFoundException("Réservation introuvable pour la cargaison : " + dto.getCargaisonId()));
+        if (paiementRepository.existsByReservation_Cargaison_Id(dto.getCargaisonId())) {
             throw new IllegalArgumentException(
                     "Un paiement existe déjà pour cette cargaison."
             );
@@ -40,13 +39,12 @@ public class PaiementServiceImpl implements PaiementService {
         }
 
         Paiement paiement = paiementMapper.toEntity(dto);
-        paiement.setCargaison(cargaison);
+        paiement.setReservation(reservation);
         paiement.setMethodePaiement(MethodePaiement.CASH);
 
         if (paiement.getStatutPaiement() == null) {
             paiement.setStatutPaiement(StatutPaiement.EN_ATTENTE);
         }
-
         return paiementMapper.toDto(paiementRepository.save(paiement));
     }
 
@@ -89,7 +87,7 @@ public class PaiementServiceImpl implements PaiementService {
     @Override
     @Cacheable(value = "paiements_cargaison", key = "#cargaisonId")
     public PaiementDto trouverParCargaison(Long cargaisonId) {
-        Paiement paiement = paiementRepository.findByCargaisonId(cargaisonId).orElseThrow(() -> new EntityNotFoundException("Paiement introuvable pour la cargaison : " + cargaisonId));
+        Paiement paiement = paiementRepository.findByReservation_Cargaison_Id(cargaisonId).orElseThrow(() -> new EntityNotFoundException("Paiement introuvable pour la cargaison : " + cargaisonId));
         return paiementMapper.toDto(paiement);
     }
 }
