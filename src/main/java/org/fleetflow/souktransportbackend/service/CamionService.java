@@ -17,4 +17,5 @@ public interface CamionService {
     List<CamionDto> listerParCapaciteSuperieure(Long transporteurId, Double capacite);
     Page<CamionDto> rechercher(Long transporteurId, String keyword, int page, int size);
     Page<CamionDto> trierCamions(Long transporteurId, int page, int size, String sortBy, String direction);
+    List<CamionDto> mesCamions(String email);
 }

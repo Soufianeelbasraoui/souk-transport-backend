@@ -26,7 +26,8 @@ public class Paiement {
     @Enumerated(EnumType.STRING)
     @Column(name = "methode")
     private MethodePaiement methodePaiement=MethodePaiement.CASH;
+
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cargaison_id",nullable = false,unique = true)
-    private Cargaison cargaison;
+    @JoinColumn(name = "reservation_id",nullable = false,unique = true)
+    private Reservation reservation;
 }

@@ -16,5 +16,7 @@ public interface TrajetService {
     Page<TrajetDto> listerTrajets(int page, int size);
 
     List<TrajetDto> listerTrajetsPublies();
-    List<TrajetDto> mesTrajets(String email);    Page<TrajetDto> recentTrajets(int page, int size);
+    List<TrajetDto> mesTrajets(String email);
+    Page<TrajetDto> recentTrajets(int page, int size);
+    Long countTrajet(String email);
 }

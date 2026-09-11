@@ -39,18 +39,18 @@ public class CamionController {
         return ResponseEntity.noContent().build();
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'TRANSPORTEUR', 'EXPEDITEUR')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TRANSPORTEUR')")
     @GetMapping("/{id}")
     public ResponseEntity<CamionDto> consulterCamion(@PathVariable Long id) {
         return ResponseEntity.ok(camionService.consulterCamion(id));
     }
-    @PreAuthorize("hasAnyRole('ADMIN', 'TRANSPORTEUR', 'EXPEDITEUR')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TRANSPORTEUR')")
     @GetMapping("/transporteur/{transporteurId}")
     public ResponseEntity<List<CamionDto>> listerCamionsTransporteur(@PathVariable Long transporteurId) {
         return ResponseEntity.ok(camionService.listerCamionsTransporteur(transporteurId));
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'TRANSPORTEUR', 'EXPEDITEUR')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TRANSPORTEUR')")
     @GetMapping("/transporteur/{transporteurId}/page")
     public ResponseEntity<Page<CamionDto>> listerCamionsTransporteur(@PathVariable Long transporteurId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         return ResponseEntity.ok(camionService.listerCamionsTransporteur(transporteurId, page, size));
@@ -75,5 +75,13 @@ public class CamionController {
     @GetMapping("/transporteur/{transporteurId}/tri")
     public ResponseEntity<Page<CamionDto>> trierCamions(@PathVariable Long transporteurId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "id") String sortBy, @RequestParam(defaultValue = "desc") String direction) {
         return ResponseEntity.ok(camionService.trierCamions(transporteurId, page, size, sortBy, direction));
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'TRANSPORTEUR')")
+    @GetMapping("/mesCamions")
+    public ResponseEntity<List<CamionDto>> getMesCamions(Authentication authentication){
+        List<CamionDto> mesCamion=camionService.mesCamions(authentication.getName());
+        return ResponseEntity.ok(mesCamion);
+
     }
 }
