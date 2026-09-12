@@ -1,9 +1,10 @@
 package org.fleetflow.souktransportbackend.dto.request;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.fleetflow.souktransportbackend.enums.StatutTrajet;
 
 import java.time.LocalDateTime;
 
@@ -11,11 +12,22 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TrajetRequestDto {
+
+    @NotBlank(message = "La ville de départ est obligatoire")
     private String villeDepart;
+
+    @NotBlank(message = "La ville d'arrivée est obligatoire")
     private String villeArrivee;
+
+    @NotNull(message = "La date de départ est obligatoire")
     private LocalDateTime dateDepart;
+
+    @NotNull(message = "Le prix est obligatoire")
     private Double prix;
-    private double poidsDisponible;
-    private StatutTrajet statutTrajet;
+
+    @NotNull(message = "Le poids disponible est obligatoire")
+    private Double poidsDisponible;
+
+    @NotNull(message = "Le camion est obligatoire")
     private Long camionId;
 }

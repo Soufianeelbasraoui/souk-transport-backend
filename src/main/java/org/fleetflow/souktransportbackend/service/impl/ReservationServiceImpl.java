@@ -31,25 +31,33 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public ReservationDto ajouterReservation(ReservationRequestDto dto) {
-        Trajet trajet = trajetRepository.findById(dto.getTrajetId()).orElseThrow(() -> new EntityNotFoundException("Trajet introuvable مع الـ ID : " + dto.getTrajetId()));
-        Cargaison cargaison = cargaisonRepository.findById(dto.getCargaisonId()).orElseThrow(() -> new EntityNotFoundException("Cargaison introuvable مع الـ ID : " + dto.getCargaisonId()));
-        Reservation reservation = reservationMapper.toEntity(dto);
+       Trajet trajet=trajetRepository.findById(dto.getTrajetId()).orElseThrow(()->new EntityNotFoundException("Trajet introuvalble avec l'id :"+ dto.getTrajetId()));
+       Cargaison cargaison=cargaisonRepository.findById(dto.getCargaisonId()).orElseThrow(()->new EntityNotFoundException("Cargaison introuvalble avec le id :"+dto.getCargaisonId()));
+       if (cargaison.getPoids()==null || cargaison.getPoids()<=0){
+           throw new IllegalStateException("Le poids de la cargaison est invalide.");
+       }
+       if(cargaison.getStatutCargaison()==StatutCargaison.EN_TRANSIT){
+           throw new IllegalStateException("Cette cargaison est déja en transit.");
+       }
+       if (trajet.getPoidsDisponible()<cargaison.getPoids()){
+           throw new IllegalStateException("Le poids de la cargaison dépasse le poids disponible du trajet.");
+       }
+       Boolean  reservationExiste=reservationRepository.findByCargaisonId(cargaison.getId()).stream().anyMatch(r->r.getStatutReservation()==StatutReservation.EN_ATTENTE || r.getStatutReservation()==StatutReservation.ACCEPTEE);
+       if (reservationExiste){
+           throw new IllegalStateException("Cette cargaison possède déjà une réservation.");
+       }
+       Reservation reservation=reservationMapper.toEntity(dto);
+       reservation.setTrajet(trajet);
+       reservation.setCargaison(cargaison);
+       reservation.setPoidsReserve(cargaison.getPoids());
+       reservation.setStatutReservation(StatutReservation.EN_ATTENTE);
 
-        reservation.setTrajet(trajet);
-        reservation.setCargaison(cargaison);
-        reservation.setPoidsReserve(cargaison.getPoids());
-        reservation.setStatutReservation(StatutReservation.EN_ATTENTE);
-
-        if (cargaison.getPoids() > trajet.getPoidsDisponible()) {
-            throw new IllegalStateException("Le poids de la cargaison dépasse le poids disponible du trajet.");
-        }
-        if (dto.getPrixConvenu() == null) {
-            Double prixCalculated = (trajet.getPrix() != null) ? trajet.getPrix() : 0.0;
-            reservation.setPrixConvenu(prixCalculated);
-        } else {
-            reservation.setPrixConvenu(dto.getPrixConvenu());
-        }
-        return reservationMapper.toDto(reservationRepository.save(reservation));
+       if (dto.getPrixConvenu()==null){
+           reservation.setPrixConvenu(trajet.getPrix()!=null ?trajet.getPrix():0.0);
+       }else {
+           reservation.setPrixConvenu(dto.getPrixConvenu());
+       }
+       return reservationMapper.toDto(reservationRepository.save(reservation));
     }
 
     @Override
@@ -120,6 +128,7 @@ public class ReservationServiceImpl implements ReservationService {
     public ReservationDto accepterReservation(Long reservationId) {
 
         Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(() -> new EntityNotFoundException("Réservation introuvable avec l'id : " + reservationId));
+
         if (reservation.getStatutReservation() != StatutReservation.EN_ATTENTE) {
             throw new IllegalStateException("Cette réservation ne peut plus être acceptée.");
         }
@@ -136,27 +145,42 @@ public class ReservationServiceImpl implements ReservationService {
         if (trajet.getPoidsDisponible() < poidsReserve) {
             throw new IllegalStateException("Le poids disponible dans le trajet n'est plus suffisant.");
         }
+
+        List<Reservation> autresReservations =
+                reservationRepository.findByCargaisonId(cargaison.getId())
+                        .stream()
+                        .filter(r -> !r.getId().equals(reservationId) && r.getStatutReservation() == StatutReservation.EN_ATTENTE).toList();
+
+        for (Reservation autre : autresReservations) {
+            autre.setStatutReservation(StatutReservation.REFUSEE);
+        }
+
+        reservationRepository.saveAll(autresReservations);
+
         trajet.setPoidsDisponible(trajet.getPoidsDisponible() - poidsReserve);
+
         reservation.setStatutReservation(StatutReservation.ACCEPTEE);
+
         cargaison.setStatutCargaison(StatutCargaison.EN_TRANSIT);
+
         trajetRepository.save(trajet);
         cargaisonRepository.save(cargaison);
+
         return reservationMapper.toDto(reservationRepository.save(reservation));
     }
 
     @Override
     @Transactional
     public ReservationDto refuserReservation(Long reservationId) {
-
         Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(() -> new EntityNotFoundException("Réservation introuvable avec l'id : " + reservationId));
         if (reservation.getStatutReservation() != StatutReservation.EN_ATTENTE) {
             throw new IllegalStateException("Cette réservation ne peut plus être refusée.");
         }
 
         reservation.setStatutReservation(StatutReservation.REFUSEE);
-
         return reservationMapper.toDto(reservationRepository.save(reservation));
     }
+
     @Override
     @Transactional
     public ReservationDto annulerReservation(Long reservationId) {
@@ -166,16 +190,18 @@ public class ReservationServiceImpl implements ReservationService {
         if (reservation.getStatutReservation() == StatutReservation.ANNULEE) {
             throw new IllegalStateException("Cette réservation est déjà annulée.");
         }
+
         if (reservation.getStatutReservation() == StatutReservation.ACCEPTEE) {
             Trajet trajet = reservation.getTrajet();
-
             trajet.setPoidsDisponible(trajet.getPoidsDisponible() + reservation.getPoidsReserve());
             trajetRepository.save(trajet);
             Cargaison cargaison = reservation.getCargaison();
             cargaison.setStatutCargaison(StatutCargaison.SOUMISE);
             cargaisonRepository.save(cargaison);
         }
+
         reservation.setStatutReservation(StatutReservation.ANNULEE);
+
         return reservationMapper.toDto(reservationRepository.save(reservation));
     }
 

@@ -34,8 +34,7 @@ public class TrajetController {
     @PutMapping("/{id}")
     @Operation(summary = "Modifier un trajet existant par son ID")
     public ResponseEntity<TrajetDto> modifierTrajet(@PathVariable Long id, @Valid @RequestBody TrajetRequestDto dto) {
-        TrajetDto trajetModifie = trajetService.modifierTrajet(id, dto);
-        return ResponseEntity.ok(trajetModifie);
+        return ResponseEntity.ok(trajetService.modifierTrajet(id, dto));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'TRANSPORTEUR')")
@@ -50,16 +49,14 @@ public class TrajetController {
     @GetMapping("/{id}")
     @Operation(summary = "Consulter les détails d'un trajet par son ID")
     public ResponseEntity<TrajetDto> consulterTrajet(@PathVariable Long id) {
-        TrajetDto trajet = trajetService.consulterTrajet(id);
-        return ResponseEntity.ok(trajet);
+        return ResponseEntity.ok(trajetService.consulterTrajet(id));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'TRANSPORTEUR', 'EXPEDITEUR')")
     @GetMapping
     @Operation(summary = "Lister les trajets avec pagination")
     public ResponseEntity<Page<TrajetDto>> listerTrajets(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
-        Page<TrajetDto> trajets = trajetService.listerTrajets(page, size);
-        return ResponseEntity.ok(trajets);
+        return ResponseEntity.ok(trajetService.listerTrajets(page, size));
     }
 
     @GetMapping("/publies")
@@ -76,14 +73,12 @@ public class TrajetController {
     @GetMapping("/mesTrajets")
     @PreAuthorize("hasAnyRole('ADMIN', 'TRANSPORTEUR')")
     public ResponseEntity<List<TrajetDto>> getMesTrajets(Authentication authentication) {
-        List<TrajetDto> mesTrajets = trajetService.mesTrajets(authentication.getName());
-        return ResponseEntity.ok(mesTrajets);
+        return ResponseEntity.ok(trajetService.mesTrajets(authentication.getName()));
     }
 
     @GetMapping("/countTrajet")
     @PreAuthorize("hasAnyRole('ADMIN', 'TRANSPORTEUR')")
     public ResponseEntity<Long> getCountTrajet(Authentication authentication){
-        Long count=trajetService.countTrajet(authentication.getName());
-        return ResponseEntity.ok(count);
+        return ResponseEntity.ok(trajetService.countTrajet(authentication.getName()));
     }
 }

@@ -51,7 +51,6 @@ public class ReservationController {
     public ResponseEntity<ReservationDto> refuserReservation(@PathVariable Long id) {
         return ResponseEntity.ok(reservationService.refuserReservation(id));
     }
-
     @PatchMapping("/{id}/annuler")
     @PreAuthorize("hasAnyRole('ADMIN', 'EXPEDITEUR')")
     public ResponseEntity<ReservationDto> annulerReservation(@PathVariable Long id) {
@@ -65,13 +64,13 @@ public class ReservationController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'EXPEDITEUR', 'TRANSPORTEUR')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<ReservationDto>> listerReservations() {
         return ResponseEntity.ok(reservationService.listerReservations());
     }
 
     @GetMapping("/page")
-    @PreAuthorize("hasAnyRole('ADMIN', 'EXPEDITEUR', 'TRANSPORTEUR')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<ReservationDto>> listerReservations(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         return ResponseEntity.ok(reservationService.listerReservations(page, size));
     }
