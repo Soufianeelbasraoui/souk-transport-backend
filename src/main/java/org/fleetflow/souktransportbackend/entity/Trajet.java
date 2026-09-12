@@ -10,7 +10,8 @@ import org.fleetflow.souktransportbackend.enums.StatutTrajet;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Entity(name = "trajets")
+@Entity
+@Table(name = "trajets")
 @Getter
 @Setter
 @NoArgsConstructor

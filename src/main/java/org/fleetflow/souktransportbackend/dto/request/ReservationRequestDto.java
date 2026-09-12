@@ -15,5 +15,6 @@ public class ReservationRequestDto {
 
     @NotNull(message = "Le trajet est obligatoire")
     private Long trajetId;
+
     private Double prixConvenu;
 }
