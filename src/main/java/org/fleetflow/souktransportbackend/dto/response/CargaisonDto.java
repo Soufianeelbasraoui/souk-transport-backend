@@ -15,6 +15,5 @@ public class CargaisonDto implements Serializable {
     private String description;
     private Double poids;
     private StatutCargaison statutCargaison;
-    private Long trajetId;
     private Long expediteurId;
 }

@@ -45,7 +45,7 @@ public class TrajetServiceImpl implements TrajetService {
         }
         Trajet trajet = trajetMapper.toEntityRequest(dto);
         trajet.setCamion(camion);
-        if (dto.getStatutTrajet() == null) {
+        if (trajet.getStatutTrajet()==null) {
             trajet.setStatutTrajet(StatutTrajet.PUBLIE);
         }
         Trajet trajetSaved = trajetRepository.save(trajet);
