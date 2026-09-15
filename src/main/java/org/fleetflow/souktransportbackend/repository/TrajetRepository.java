@@ -4,6 +4,8 @@ import org.fleetflow.souktransportbackend.enums.StatutTrajet;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -13,4 +15,10 @@ public interface TrajetRepository extends JpaRepository<Trajet, Long> {
     Page<Trajet> findByStatutTrajetOrderByDateDepartDesc(StatutTrajet statutTrajet, Pageable pageable);
     List<Trajet> findByCamionTransporteurId(Long transporteurId);
     Long countByCamionTransporteurId(Long id);
+
+    @Query("SELECT COUNT(r) FROM Reservation r WHERE r.trajet.id = :trajetId")
+    Long countReservationsByTrajetId(@Param("trajetId") Long trajetId);
+    Long countByStatutTrajet(StatutTrajet statutTrajet);
+
+    Page<Trajet> findAllByOrderByIdDesc(Pageable pageable);
 }

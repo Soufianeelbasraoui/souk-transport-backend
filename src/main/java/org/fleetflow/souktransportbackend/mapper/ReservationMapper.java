@@ -12,6 +12,8 @@ public interface ReservationMapper {
 
     @Mapping(target = "trajetId", source = "trajet.id")
     @Mapping(target = "cargaisonId", source = "cargaison.id")
+    @Mapping(source = "trajet.villeDepart", target = "villeDepart")
+    @Mapping(source = "trajet.villeArrivee", target = "villeArrivee")
     ReservationDto toDto(Reservation entity);
 
     @Mapping(target = "id", ignore = true)

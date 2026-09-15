@@ -4,6 +4,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.fleetflow.souktransportbackend.dto.request.UserRequestDto;
 import org.fleetflow.souktransportbackend.dto.response.UserDto;
+import org.fleetflow.souktransportbackend.enums.Role;
+import org.fleetflow.souktransportbackend.enums.StatutUser;
 import org.fleetflow.souktransportbackend.service.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -47,5 +49,33 @@ public class UserController {
     public ResponseEntity<Void> supprimerUser(@PathVariable Long id) {
         userService.supprimerUser(id);
         return ResponseEntity.noContent().build();
+    }
+
+
+    @GetMapping("/search/nom")
+    public ResponseEntity<Page<UserDto>> rechercherParNom(
+            @RequestParam String nom,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return ResponseEntity.ok(userService.rechercherParNom(nom, page, size));
+    }
+
+
+    @GetMapping("/filter/role")
+    public ResponseEntity<Page<UserDto>> filtrerParRole(
+            @RequestParam Role role,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return ResponseEntity.ok(userService.filtrerParRole(role, page, size));
+    }
+    @GetMapping("/filter/statut")
+    public ResponseEntity<Page<UserDto>> filtrerParStatut(
+            @RequestParam StatutUser statut,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return ResponseEntity.ok(userService.filtrerParStatut(statut, page, size));
     }
 }

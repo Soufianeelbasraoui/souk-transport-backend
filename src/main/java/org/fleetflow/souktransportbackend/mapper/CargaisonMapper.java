@@ -15,6 +15,8 @@ import java.util.List;
 public interface CargaisonMapper {
 
     @Mapping(source = "expediteur.id", target = "expediteurId")
+    @Mapping(source = "expediteur.nom", target = "expediteurNom")
+    @Mapping(source = "expediteur.prenom", target = "expediteurPrenom")
     CargaisonDto toDto(Cargaison cargaison);
 
     List<CargaisonDto> toDtoList(List<Cargaison> cargaisons);

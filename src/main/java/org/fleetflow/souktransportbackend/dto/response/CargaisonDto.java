@@ -5,15 +5,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.fleetflow.souktransportbackend.enums.StatutCargaison;
 
-import java.io.Serializable;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CargaisonDto implements Serializable {
+public class CargaisonDto{
     private Long id;
     private String description;
     private Double poids;
     private StatutCargaison statutCargaison;
     private Long expediteurId;
+    private String expediteurNom;
+    private String expediteurPrenom;
 }

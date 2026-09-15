@@ -67,7 +67,7 @@ public class TrajetController {
     }
 
     @GetMapping("/recent")
-    public Page<TrajetDto> getRecentTrajets(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "3") int size) {
+    public Page<TrajetDto> getRecentTrajets(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         return trajetService.recentTrajets(page, size);
     }
     @GetMapping("/mesTrajets")

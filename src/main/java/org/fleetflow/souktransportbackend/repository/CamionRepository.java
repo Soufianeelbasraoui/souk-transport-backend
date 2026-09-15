@@ -15,6 +15,5 @@ public interface CamionRepository extends JpaRepository<Camion, Long> {
     Page<Camion> findByTransporteurId(Long transporteurId, Pageable pageable);
     List<Camion> findByTransporteurIdAndType(Long transporteurId, TypeCamion type);
     List<Camion> findByTransporteurIdAndCapaciteGreaterThanEqual(Long transporteurId, Double capacite);
-    Page<Camion> findByTransporteurIdAndImmatriculationContainingIgnoreCase(Long transporteurId, String immatriculation, Pageable pageable);
 
 }
