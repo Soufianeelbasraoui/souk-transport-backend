@@ -18,4 +18,5 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     long countByCargaisonExpediteurId(Long expediteurId);
 
     List<Reservation> findByTrajet_Camion_TransporteurId(Long transporteurId);
+    List<Reservation> findFirst5ByOrderByIdDesc();
 }

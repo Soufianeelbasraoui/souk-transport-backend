@@ -23,20 +23,6 @@ services:
     networks:
       - souktransport-network
 
-  redis:
-    image: redis:7
-    container_name: souktransport-redis
-
-    ports:
-      - "6380:6379"
-
-    volumes:
-      - redis_data:/data
-
-    restart: unless-stopped
-    networks:
-      - souktransport-network
-
   app:
     build: .
     container_name: souktransport-backend
@@ -49,17 +35,11 @@ services:
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: "1234"
 
-      SPRING_DATA_REDIS_HOST: redis
-      SPRING_DATA_REDIS_PORT: 6379
-
       JWT_SECRET: "1234567890123456789012345678901234567890123456789012345678901234"
 
     depends_on:
       mysql:
         condition: service_healthy
-
-      redis:
-        condition: service_started
 
     restart: unless-stopped
 
@@ -68,7 +48,6 @@ services:
 
 volumes:
   mysql_data:
-  redis_data:
 
 networks:
   souktransport-network:

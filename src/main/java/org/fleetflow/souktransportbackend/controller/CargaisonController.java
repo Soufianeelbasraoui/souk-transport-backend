@@ -30,7 +30,7 @@ public class CargaisonController {
     public ResponseEntity<CargaisonDto> modifierCargaison(@PathVariable Long id,@Valid @RequestBody CargaisonRequestDto dto) {
         return ResponseEntity.ok(cargaisonService.modifierCargaison(id, dto));
     }
-    @PreAuthorize("hasAnyRole('ADMIN', 'EXPEDITEUR', 'TRANSPORTEUR')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EXPEDITEUR')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> supprimerCargaison(@PathVariable Long id) {
         cargaisonService.supprimerCargaison(id);
@@ -55,7 +55,7 @@ public class CargaisonController {
 
 
     @PreAuthorize("hasAnyRole('ADMIN', 'EXPEDITEUR', 'TRANSPORTEUR')")
-    @GetMapping("/page")
+    @GetMapping("/lister")
     public ResponseEntity<Page<CargaisonDto>> listerCargaisons(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         return ResponseEntity.ok(cargaisonService.listerCargaisons(page, size));
     }

@@ -7,6 +7,7 @@ import org.fleetflow.souktransportbackend.dto.response.ReservationDto;
 import org.fleetflow.souktransportbackend.entity.*;
 import org.fleetflow.souktransportbackend.enums.StatutCargaison;
 import org.fleetflow.souktransportbackend.enums.StatutReservation;
+import org.fleetflow.souktransportbackend.enums.StatutTrajet;
 import org.fleetflow.souktransportbackend.mapper.ReservationMapper;
 import org.fleetflow.souktransportbackend.repository.*;
 import org.fleetflow.souktransportbackend.service.ReservationService;
@@ -44,9 +45,7 @@ public class ReservationServiceImpl implements ReservationService {
         if (trajet.getPoidsDisponible() < cargaison.getPoids())
             throw new IllegalStateException("Poids disponible insuffisant.");
 
-        boolean existe = reservationRepository.findByCargaisonId(cargaison.getId())
-                .stream()
-                .anyMatch(r -> r.getStatutReservation() == StatutReservation.EN_ATTENTE || r.getStatutReservation() == StatutReservation.ACCEPTEE);
+        boolean existe = reservationRepository.findByCargaisonId(cargaison.getId()).stream().anyMatch(r -> r.getStatutReservation() == StatutReservation.EN_ATTENTE || r.getStatutReservation() == StatutReservation.ACCEPTEE);
 
         if (existe) throw new IllegalStateException("Cette cargaison possède déjà une réservation.");
 
@@ -57,7 +56,6 @@ public class ReservationServiceImpl implements ReservationService {
         reservation.setStatutReservation(StatutReservation.EN_ATTENTE);
 
         reservation.setPrixConvenu(dto.getPrixConvenu() != null ? dto.getPrixConvenu() : trajet.getPrix());
-
         return reservationMapper.toDto(reservationRepository.save(reservation));
     }
 
@@ -94,20 +92,14 @@ public class ReservationServiceImpl implements ReservationService {
         reservation.setTrajet(trajet);
         reservation.setCargaison(cargaison);
         reservation.setPoidsReserve(cargaison.getPoids());
-
-        reservation.setPrixConvenu(dto.getPrixConvenu() != null ? dto.getPrixConvenu() : trajet.getPrix()
-        );
+        reservation.setPrixConvenu(dto.getPrixConvenu() != null ? dto.getPrixConvenu() : trajet.getPrix());
         return reservationMapper.toDto(reservationRepository.save(reservation));
     }
 
     @Override
     @Transactional
     public void supprimerReservation(Long id) {
-
-        Reservation reservation = reservationRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        "Réservation introuvable : " + id));
-
+        Reservation reservation = reservationRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Réservation introuvable : " + id));
         reservationRepository.delete(reservation);
     }
 
@@ -154,9 +146,7 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     @Transactional(readOnly = true)
     public Long countReservationsTransporteur(String email) {
-
         User transporteur = transporteurRepository.findByEmail(email).orElseThrow(() -> new EntityNotFoundException("Transporteur introuvable."));
-
         return reservationRepository.countByTrajetCamionTransporteurId(transporteur.getId());
     }
 
@@ -173,27 +163,28 @@ public class ReservationServiceImpl implements ReservationService {
         Cargaison cargaison = reservation.getCargaison();
         Double poids = reservation.getPoidsReserve();
 
-        if (poids == null || poids <= 0){
+        if (poids == null || poids <= 0) {
             throw new IllegalStateException("Poids réservé invalide.");
         }
 
-
-        if (trajet.getPoidsDisponible() < poids){
+        if (trajet.getPoidsDisponible() < poids) {
             throw new IllegalStateException("Poids disponible insuffisant.");
         }
 
-        List<Reservation> autres = reservationRepository.findByCargaisonId(cargaison.getId()).stream().filter(r -> !r.getId().equals(reservationId) && r.getStatutReservation() == StatutReservation.EN_ATTENTE).toList();
+        List<Reservation> autres = reservationRepository.findByCargaisonId(cargaison.getId())
+                .stream()
+                .filter(r -> !r.getId().equals(reservationId) && r.getStatutReservation() == StatutReservation.EN_ATTENTE).toList();
         autres.forEach(r -> r.setStatutReservation(StatutReservation.REFUSEE));
         reservationRepository.saveAll(autres);
-
         trajet.setPoidsDisponible(trajet.getPoidsDisponible() - poids);
+
         cargaison.setStatutCargaison(StatutCargaison.EN_TRANSIT);
         reservation.setStatutReservation(StatutReservation.ACCEPTEE);
 
+        trajet.setStatutTrajet(  StatutTrajet.EN_COURS);
         trajetRepository.save(trajet);
         cargaisonRepository.save(cargaison);
-
-        return reservationMapper.toDto(reservationRepository.save(reservation));
+        return reservationMapper.toDto( reservationRepository.save(reservation));
     }
 
     @Override
@@ -201,11 +192,9 @@ public class ReservationServiceImpl implements ReservationService {
     public ReservationDto refuserReservation(Long reservationId) {
 
         Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(() -> new EntityNotFoundException("Réservation introuvable : " + reservationId));
-
         if (reservation.getStatutReservation() != StatutReservation.EN_ATTENTE)
             throw new IllegalStateException("Cette réservation ne peut plus être refusée.");
         reservation.setStatutReservation(StatutReservation.REFUSEE);
-
         return reservationMapper.toDto(reservationRepository.save(reservation));
     }
 
@@ -214,16 +203,12 @@ public class ReservationServiceImpl implements ReservationService {
     public ReservationDto annulerReservation(Long reservationId) {
 
         Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(() -> new EntityNotFoundException("Réservation introuvable : " + reservationId));
-
         if (reservation.getStatutReservation() == StatutReservation.ANNULEE){
             throw new IllegalStateException("Réservation déjà annulée.");
         }
-
         if (reservation.getStatutReservation() == StatutReservation.ACCEPTEE) {
-
             Trajet trajet = reservation.getTrajet();
             trajet.setPoidsDisponible(trajet.getPoidsDisponible() + reservation.getPoidsReserve());
-
             Cargaison cargaison = reservation.getCargaison();
             cargaison.setStatutCargaison(StatutCargaison.SOUMISE);
 

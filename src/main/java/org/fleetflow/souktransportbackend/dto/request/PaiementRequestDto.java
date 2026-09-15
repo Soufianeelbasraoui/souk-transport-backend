@@ -19,6 +19,6 @@ public class PaiementRequestDto {
     @NotNull(message = "La méthode de paiement est obligatoire")
     private MethodePaiement methodePaiement;
 
-    @NotNull(message = "La cargaison est obligatoire")
-    private Long cargaisonId;
+    @NotNull(message = "La réservation est obligatoire")
+    private Long reservationId;
 }
