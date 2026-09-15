@@ -15,16 +15,14 @@ import org.fleetflow.souktransportbackend.repository.TrajetRepository;
 import org.fleetflow.souktransportbackend.repository.UserRepository;
 import org.fleetflow.souktransportbackend.service.TrajetService;
 
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -37,30 +35,57 @@ public class TrajetServiceImpl implements TrajetService {
     private final TrajetMapper trajetMapper;
 
     @Override
-    @CacheEvict(value = {"trajet", "trajets", "recentTrajets", "mesTrajets"},allEntries = true)
     public TrajetDto ajouterTrajet(TrajetRequestDto dto) {
-        Camion camion = camionRepository.findById(dto.getCamionId()).orElseThrow(() -> new EntityNotFoundException("Camion introuvable avec l'id : " + dto.getCamionId()));
+
+        Camion camion = camionRepository.findById(dto.getCamionId())
+                .orElseThrow(() ->
+                        new EntityNotFoundException(
+                                "Camion introuvable avec l'id : " + dto.getCamionId()
+                        )
+                );
+
         if (!Boolean.TRUE.equals(camion.getDisponible())) {
             throw new RuntimeException("Le camion sélectionné n'est pas disponible.");
         }
+
         Trajet trajet = trajetMapper.toEntityRequest(dto);
+
         trajet.setCamion(camion);
-        if (trajet.getStatutTrajet()==null) {
+
+        if (trajet.getStatutTrajet() == null) {
             trajet.setStatutTrajet(StatutTrajet.PUBLIE);
         }
+
         Trajet trajetSaved = trajetRepository.save(trajet);
+
         return trajetMapper.toDto(trajetSaved);
     }
 
     @Override
-    @CacheEvict(value = {"trajet", "trajets", "recentTrajets", "mesTrajets"}, allEntries = true)
     public TrajetDto modifierTrajet(Long id, TrajetRequestDto dto) {
-        Trajet trajet = trajetRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Trajet introuvable avec l'id : " + id));
+
+        Trajet trajet = trajetRepository.findById(id)
+                .orElseThrow(() ->
+                        new EntityNotFoundException(
+                                "Trajet introuvable avec l'id : " + id
+                        )
+                );
+
         if (dto.getCamionId() != null) {
-            Camion camion = camionRepository.findById(dto.getCamionId()).orElseThrow(() -> new EntityNotFoundException("Camion introuvable avec l'id : " + dto.getCamionId()));
+
+            Camion camion = camionRepository.findById(dto.getCamionId())
+                    .orElseThrow(() ->
+                            new EntityNotFoundException(
+                                    "Camion introuvable avec l'id : " + dto.getCamionId()
+                            )
+                    );
+
             if (!Boolean.TRUE.equals(camion.getDisponible())) {
-                throw new RuntimeException("Le camion sélectionné n'est pas disponible.");
+                throw new RuntimeException(
+                        "Le camion sélectionné n'est pas disponible."
+                );
             }
+
             trajet.setCamion(camion);
         }
 
@@ -72,55 +97,138 @@ public class TrajetServiceImpl implements TrajetService {
     }
 
     @Override
-    @CacheEvict(value = {"trajet", "trajets", "recentTrajets", "mesTrajets"}, allEntries = true)
     public void supprimerTrajet(Long id) {
+
         if (!trajetRepository.existsById(id)) {
-            throw new EntityNotFoundException("Trajet introuvable avec l'id : " + id);
+            throw new EntityNotFoundException(
+                    "Trajet introuvable avec l'id : " + id
+            );
         }
+
         trajetRepository.deleteById(id);
     }
+
     @Override
-    @Cacheable(value = "trajet", key = "#id")
     @Transactional(readOnly = true)
     public TrajetDto consulterTrajet(Long id) {
-        Trajet trajet = trajetRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Trajet introuvable avec l'id : " + id));
-        return trajetMapper.toDto(trajet);
+
+        Trajet trajet = trajetRepository.findById(id)
+                .orElseThrow(() ->
+                        new EntityNotFoundException("Trajet introuvable")
+                );
+
+        TrajetDto dto = trajetMapper.toDto(trajet);
+
+        Long nombreReservations =
+                trajetRepository.countReservationsByTrajetId(trajet.getId());
+
+        dto.setNombreReservations(nombreReservations.intValue());
+
+        return dto;
     }
 
     @Override
-    @Cacheable(value = "trajets", key = "'page:' + #page + ':size:' + #size")
+    @Cacheable(
+            value = "trajets",
+            key = "'page:' + #page + ':size:' + #size"
+    )
     @Transactional(readOnly = true)
     public Page<TrajetDto> listerTrajets(int page, int size) {
+
         Pageable pageable = PageRequest.of(page, size);
-        return trajetRepository.findAll(pageable).map(trajetMapper::toDto);
+
+        return trajetRepository.findAll(pageable)
+                .map(trajet -> {
+
+                    TrajetDto dto = trajetMapper.toDto(trajet);
+
+                    Long nombreReservations =
+                            trajetRepository.countReservationsByTrajetId(
+                                    trajet.getId()
+                            );
+
+                    dto.setNombreReservations(
+                            nombreReservations.intValue()
+                    );
+
+                    return dto;
+                });
     }
 
     @Override
-    @Cacheable(value = "trajetsPublies")
     @Transactional(readOnly = true)
     public List<TrajetDto> listerTrajetsPublies() {
-        return trajetRepository.findByStatutTrajet(StatutTrajet.PUBLIE).stream().map(trajetMapper::toDto).toList();
+
+        return trajetRepository
+                .findByStatutTrajet(StatutTrajet.PUBLIE)
+                .stream()
+                .map(trajetMapper::toDto)
+                .toList();
     }
 
     @Override
-    @Cacheable(value = "mesTrajets", key = "#email")
     @Transactional(readOnly = true)
     public List<TrajetDto> mesTrajets(String email) {
-        User transporteur = userRepository.findByEmail(email).orElseThrow(() -> new EntityNotFoundException("Utilisateur introuvable"));
-        return trajetRepository.findByCamionTransporteurId(transporteur.getId()).stream().map(trajetMapper::toDto).toList();
+
+        User transporteur = userRepository.findByEmail(email)
+                .orElseThrow(() ->
+                        new EntityNotFoundException(
+                                "Utilisateur introuvable"
+                        )
+                );
+
+        List<Trajet> trajets =
+                trajetRepository.findByCamionTransporteurId(
+                        transporteur.getId()
+                );
+
+        List<TrajetDto> result = new ArrayList<>();
+
+        for (Trajet trajet : trajets) {
+
+            TrajetDto dto = trajetMapper.toDto(trajet);
+
+            Long nombreReservations =
+                    trajetRepository.countReservationsByTrajetId(
+                            trajet.getId()
+                    );
+
+            dto.setNombreReservations(
+                    nombreReservations.intValue()
+            );
+
+            result.add(dto);
+        }
+
+        return result;
     }
 
     @Override
-    @Cacheable(value = "recentTrajets", key = "'page:' + #page + ':size:' + #size")
     @Transactional(readOnly = true)
     public Page<TrajetDto> recentTrajets(int page, int size) {
+
         Pageable pageable = PageRequest.of(page, size);
-        return trajetRepository.findByStatutTrajetOrderByDateDepartDesc(StatutTrajet.PUBLIE, pageable).map(trajetMapper::toDto);
+
+        return trajetRepository
+                .findByStatutTrajetOrderByDateDepartDesc(
+                        StatutTrajet.PUBLIE,
+                        pageable
+                )
+                .map(trajetMapper::toDto);
     }
 
     @Override
     public Long countTrajet(String email) {
-        User transporteur = userRepository.findByEmail(email).orElseThrow(() -> new EntityNotFoundException("Utilisateur introuvable"));
-        return trajetRepository.countByCamionTransporteurId(transporteur.getId());
+
+        User transporteur = userRepository.findByEmail(email)
+                .orElseThrow(() ->
+                        new EntityNotFoundException(
+                                "Utilisateur introuvable"
+                        )
+                );
+
+        return trajetRepository.countByCamionTransporteurId(
+                transporteur.getId()
+        );
     }
 }

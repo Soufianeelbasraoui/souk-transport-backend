@@ -4,14 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.fleetflow.souktransportbackend.enums.StatutReservation;
-
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReservationDto implements Serializable {
+public class ReservationDto {
     private Long id;
     private LocalDateTime dateReservation;
     private Double poidsReserve;
@@ -19,4 +17,6 @@ public class ReservationDto implements Serializable {
     private StatutReservation statutReservation;
     private Long trajetId;
     private Long cargaisonId;
+    private String villeDepart;
+    private String villeArrivee;
 }

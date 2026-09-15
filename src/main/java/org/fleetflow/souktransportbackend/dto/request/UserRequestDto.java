@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.fleetflow.souktransportbackend.enums.Role;
+import org.fleetflow.souktransportbackend.enums.StatutUser;
 
 @Data
 @NoArgsConstructor
@@ -19,11 +20,9 @@ public class UserRequestDto {
     @NotBlank(message = "Le prénom est obligatoire")
     private String prenom;
 
-    @NotBlank(message = "L'email est obligatoire")
     @Email(message = "L'email doit être valide")
     private String email;
 
-    @NotBlank(message = "Le mot de passe est obligatoire")
     private String password;
 
     @Pattern(regexp = "^(06|07)[0-9]{8}$", message = "Le numéro de téléphone doit être un numéro marocain valide")
@@ -33,4 +32,6 @@ public class UserRequestDto {
     private String ville;
 
     private Role role;
+
+    private StatutUser statutUser;
 }
