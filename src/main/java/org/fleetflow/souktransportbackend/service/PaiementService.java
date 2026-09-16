@@ -5,10 +5,12 @@ import org.fleetflow.souktransportbackend.dto.response.PaiementDto;
 import org.springframework.data.domain.Page;
 
 public interface PaiementService {
+
     PaiementDto ajouterPaiement(PaiementRequestDto dto);
     PaiementDto consulterPaiement(Long id);
-    PaiementDto modifierPaiement( Long id, PaiementRequestDto dto);
+    PaiementDto modifierPaiement(Long id, PaiementRequestDto dto );
+    PaiementDto confirmerPaiement(Long id);
     void supprimerPaiement(Long id);
-    Page<PaiementDto> listerPaiements(int page, int size);
+    Page<PaiementDto> listerPaiements( int page,int size );
     PaiementDto trouverParCargaison(Long cargaisonId);
 }

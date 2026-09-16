@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 import org.fleetflow.souktransportbackend.dto.request.CamionRequestDto;
 import org.fleetflow.souktransportbackend.dto.response.CamionDto;
+import org.fleetflow.souktransportbackend.enums.TypeCamion;
 import org.fleetflow.souktransportbackend.service.CamionService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,10 @@ import java.util.List;
 public class CamionController {
     private final CamionService camionService;
 
+    @GetMapping("/types")
+    public ResponseEntity<TypeCamion[]> getTypesCamion() {
+        return ResponseEntity.ok(TypeCamion.values());
+    }
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'TRANSPORTEUR')")
     public ResponseEntity<CamionDto> ajouterCamion(@Valid @RequestBody CamionRequestDto dto, Authentication authentication) {
@@ -67,11 +72,6 @@ public class CamionController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'TRANSPORTEUR')")
-    @GetMapping("/transporteur/{transporteurId}/recherche")
-    public ResponseEntity<Page<CamionDto>> rechercher(@PathVariable Long transporteurId, @RequestParam String keyword, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
-        return ResponseEntity.ok(camionService.rechercher(transporteurId, keyword, page, size));
-    }
-    @PreAuthorize("hasAnyRole('ADMIN', 'TRANSPORTEUR')")
     @GetMapping("/transporteur/{transporteurId}/tri")
     public ResponseEntity<Page<CamionDto>> trierCamions(@PathVariable Long transporteurId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "id") String sortBy, @RequestParam(defaultValue = "desc") String direction) {
         return ResponseEntity.ok(camionService.trierCamions(transporteurId, page, size, sortBy, direction));
@@ -83,5 +83,11 @@ public class CamionController {
         List<CamionDto> mesCamion=camionService.mesCamions(authentication.getName());
         return ResponseEntity.ok(mesCamion);
 
+    }
+
+    @GetMapping("/lister")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Page<CamionDto>> listerCamions(@RequestParam(defaultValue = "0")int page,@RequestParam(defaultValue = "10") int size){
+        return ResponseEntity.ok(camionService.listerCamions(page,size));
     }
 }

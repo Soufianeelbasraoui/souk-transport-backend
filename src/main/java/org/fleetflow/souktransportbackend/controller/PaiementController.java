@@ -1,4 +1,5 @@
 package org.fleetflow.souktransportbackend.controller;
+
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,48 +21,52 @@ public class PaiementController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'EXPEDITEUR')")
     @PostMapping
-    @Operation(summary = "Enregistrer un nouveau paiement pour une cargaison")
+    @Operation(summary = "Enregistrer un nouveau paiement")
     public ResponseEntity<PaiementDto> ajouterPaiement(@Valid @RequestBody PaiementRequestDto dto) {
-        PaiementDto nouveauPaiement = paiementService.ajouterPaiement(dto);
-        return new ResponseEntity<>(nouveauPaiement, HttpStatus.CREATED);
+        PaiementDto paiement = paiementService.ajouterPaiement(dto);
+        return new ResponseEntity<>(paiement, HttpStatus.CREATED);
     }
-
 
     @PreAuthorize("hasAnyRole('ADMIN', 'EXPEDITEUR', 'TRANSPORTEUR')")
     @GetMapping("/{id}")
-    @Operation(summary = "Consulter les détails d'un paiement par son ID")
+    @Operation(summary = "Consulter un paiement")
     public ResponseEntity<PaiementDto> consulterPaiement(@PathVariable Long id) {
-        PaiementDto paiement = paiementService.consulterPaiement(id);
-        return ResponseEntity.ok(paiement);
+        return ResponseEntity.ok(paiementService.consulterPaiement(id));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'EXPEDITEUR')")
     @PutMapping("/{id}")
-    @Operation(summary = "Modifier un paiement existant par son ID")
+    @Operation(summary = "Modifier un paiement")
     public ResponseEntity<PaiementDto> modifierPaiement(@PathVariable Long id, @Valid @RequestBody PaiementRequestDto dto) {
-        PaiementDto paiementModifie = paiementService.modifierPaiement(id, dto);
-        return ResponseEntity.ok(paiementModifie);
+        return ResponseEntity.ok(paiementService.modifierPaiement(id, dto));
     }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'TRANSPORTEUR')")
+    @PatchMapping("/{id}/payer")
+    @Operation(summary = "Confirmer le paiement")
+    public ResponseEntity<PaiementDto> confirmerPaiement( @PathVariable Long id) {
+        return ResponseEntity.ok( paiementService.confirmerPaiement(id) );
+    }
+
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
-    @Operation(summary = "Supprimer un paiement par son ID")
-    public ResponseEntity<Void> supprimerPaiement(@PathVariable Long id) {
+    @Operation(summary = "Supprimer un paiement")
+    public ResponseEntity<Void> supprimerPaiement( @PathVariable Long id) {
         paiementService.supprimerPaiement(id);
         return ResponseEntity.noContent().build();
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'EXPEDITEUR', 'TRANSPORTEUR')")
     @GetMapping
-    @Operation(summary = "Lister tous les paiements avec pagination")
-    public ResponseEntity<Page<PaiementDto>> listerPaiements(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
-        Page<PaiementDto> paiements = paiementService.listerPaiements(page, size);
-        return ResponseEntity.ok(paiements);
+    @Operation(summary = "Lister les paiements")
+    public ResponseEntity<Page<PaiementDto>> listerPaiements( @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(paiementService.listerPaiements(page, size));
     }
+
     @PreAuthorize("hasAnyRole('ADMIN', 'EXPEDITEUR', 'TRANSPORTEUR')")
     @GetMapping("/cargaison/{cargaisonId}")
-    @Operation(summary = "Trouver le paiement associé à une cargaison")
-    public ResponseEntity<PaiementDto> trouverParCargaison(@PathVariable Long cargaisonId) {
-        PaiementDto paiement = paiementService.trouverParCargaison(cargaisonId);
-        return ResponseEntity.ok(paiement);
+    @Operation(summary = "Trouver le paiement d'une cargaison")
+    public ResponseEntity<PaiementDto> trouverParCargaison( @PathVariable Long cargaisonId) {
+        return ResponseEntity.ok( paiementService.trouverParCargaison(cargaisonId));
     }
 }

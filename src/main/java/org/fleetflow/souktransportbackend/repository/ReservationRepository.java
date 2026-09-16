@@ -2,6 +2,7 @@ package org.fleetflow.souktransportbackend.repository;
 
 import org.fleetflow.souktransportbackend.dto.response.ReservationDto;
 import org.fleetflow.souktransportbackend.entity.Reservation;
+import org.fleetflow.souktransportbackend.enums.StatutReservation;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 
@@ -18,4 +19,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     long countByCargaisonExpediteurId(Long expediteurId);
 
     List<Reservation> findByTrajet_Camion_TransporteurId(Long transporteurId);
+    List<Reservation> findFirst5ByOrderByIdDesc();
+
+
+    Long countByCargaisonExpediteurIdAndStatutReservation( Long expediteurId, StatutReservation statutReservation);
 }

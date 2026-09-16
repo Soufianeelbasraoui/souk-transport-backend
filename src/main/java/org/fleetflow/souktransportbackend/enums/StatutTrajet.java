@@ -5,5 +5,5 @@ public enum StatutTrajet {
     EN_COURS,
     TERMINE,
     ANNULE,
-    DISPONIBLE
+
 }
