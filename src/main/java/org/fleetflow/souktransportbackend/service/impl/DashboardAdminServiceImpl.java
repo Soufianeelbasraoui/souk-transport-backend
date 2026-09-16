@@ -2,11 +2,13 @@ package org.fleetflow.souktransportbackend.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.fleetflow.souktransportbackend.dto.response.DashboardAdminDto;
+import org.fleetflow.souktransportbackend.dto.response.DashboardExpediteurDto;
 import org.fleetflow.souktransportbackend.dto.response.ReservationDto;
 import org.fleetflow.souktransportbackend.dto.response.TrajetDto;
 import org.fleetflow.souktransportbackend.entity.Reservation;
 import org.fleetflow.souktransportbackend.entity.Trajet;
 import org.fleetflow.souktransportbackend.enums.StatutPaiement;
+import org.fleetflow.souktransportbackend.enums.StatutReservation;
 import org.fleetflow.souktransportbackend.enums.StatutTrajet;
 import org.fleetflow.souktransportbackend.mapper.ReservationMapper;
 import org.fleetflow.souktransportbackend.mapper.TrajetMapper;
@@ -59,5 +61,16 @@ public class DashboardAdminServiceImpl implements DashboardService {
         dto.setReservationsRecentes(reservationsRecentes);
 
         return dto;
+    }
+
+    @Override
+    public DashboardExpediteurDto dashboardExpediteur(Long expediteurId) {
+
+        Long totalCargaisons = cargaisonRepository.countByExpediteurId(expediteurId);
+        Long totalReservations = reservationRepository.countByCargaisonExpediteurId(expediteurId);
+        Long annulee = reservationRepository.countByCargaisonExpediteurIdAndStatutReservation(expediteurId, StatutReservation.ANNULEE);
+        Long refusee = reservationRepository.countByCargaisonExpediteurIdAndStatutReservation(expediteurId, StatutReservation.REFUSEE);
+        Long acceptee = reservationRepository.countByCargaisonExpediteurIdAndStatutReservation(expediteurId, StatutReservation.ACCEPTEE);
+        return new DashboardExpediteurDto(totalCargaisons, totalReservations, annulee, refusee, acceptee);
     }
 }

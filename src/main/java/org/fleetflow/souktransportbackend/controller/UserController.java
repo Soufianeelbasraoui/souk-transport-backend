@@ -53,6 +53,7 @@ public class UserController {
 
 
     @GetMapping("/search/nom")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<UserDto>> rechercherParNom(
             @RequestParam String nom,
             @RequestParam(defaultValue = "0") int page,
@@ -61,7 +62,7 @@ public class UserController {
         return ResponseEntity.ok(userService.rechercherParNom(nom, page, size));
     }
 
-
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/filter/role")
     public ResponseEntity<Page<UserDto>> filtrerParRole(
             @RequestParam Role role,
@@ -70,6 +71,8 @@ public class UserController {
     ) {
         return ResponseEntity.ok(userService.filtrerParRole(role, page, size));
     }
+
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/filter/statut")
     public ResponseEntity<Page<UserDto>> filtrerParStatut(
             @RequestParam StatutUser statut,
