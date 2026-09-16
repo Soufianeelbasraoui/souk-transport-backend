@@ -77,11 +77,6 @@ public class CargaisonServiceImpl implements CargaisonService {
         return cargaisonMapper.toDto(cargaison);
     }
 
-//    @Override
-//    @Cacheable(value = "cargaisons")
-//    public List<CargaisonDto> listerCargaisons() {
-//        return cargaisonMapper.toDtoList(cargaisonRepository.findAll());
-//    }
 
     @Override
     @Cacheable(value = "cargaisonsByExpediteur", key = "#expediteurId")
