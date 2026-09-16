@@ -16,4 +16,5 @@ public interface CargaisonRepository extends JpaRepository<Cargaison, Long> {
     List<Cargaison> findByExpediteurId(Long expediteurId);
     List<Cargaison> findByReservations_Trajet_Id(Long trajetId);
     Long countByExpediteurId(Long expediteurId);
+
 }

@@ -7,6 +7,7 @@ import org.fleetflow.souktransportbackend.dto.response.CamionDto;
 import org.fleetflow.souktransportbackend.entity.Camion;
 import org.fleetflow.souktransportbackend.entity.Transporteur;
 import org.fleetflow.souktransportbackend.entity.User;
+import org.fleetflow.souktransportbackend.enums.Role;
 import org.fleetflow.souktransportbackend.enums.TypeCamion;
 import org.fleetflow.souktransportbackend.mapper.CamionMapper;
 import org.fleetflow.souktransportbackend.repository.CamionRepository;
@@ -29,28 +30,38 @@ public class CamionServiceImpl implements CamionService {
     private final TransporteurRepository transporteurRepository;
     private final CamionMapper camionMapper;
     private final UserRepository userRepository;
+
     @Override
     public CamionDto ajouterCamion(CamionRequestDto dto, String emailUserConnecte) {
+
         if (dto.getImmatriculation() == null || dto.getImmatriculation().isBlank()) {
             throw new IllegalArgumentException("L'immatriculation est obligatoire");
         }
+
         if (dto.getCapacite() == null || dto.getCapacite() <= 0) {
             throw new IllegalArgumentException("La capacité doit être supérieure à 0");
         }
 
         String immatriculation = dto.getImmatriculation().trim().toUpperCase();
+
         if (camionRepository.existsByImmatriculation(immatriculation)) {
-            throw new IllegalArgumentException("L'immatriculation existe déjà : " + immatriculation);
+            throw new IllegalArgumentException( "L'immatriculation existe déjà : " + immatriculation );
         }
-        Transporteur transporteur = transporteurRepository.findByEmail(emailUserConnecte).orElseThrow(() -> new EntityNotFoundException("Transporteur introuvable avec l'email : " + emailUserConnecte));
+
+        Transporteur transporteur;
+
+        User user = userRepository.findByEmail(emailUserConnecte).orElseThrow(() -> new EntityNotFoundException("Utilisateur introuvable"));
+
+        if (user.getRole() == Role.ADMIN) {
+            transporteur = transporteurRepository.findById(dto.getTransporteurId()).orElseThrow(() -> new EntityNotFoundException("Transporteur introuvable"));
+        } else {
+            transporteur = transporteurRepository.findById(user.getId()).orElseThrow(() -> new EntityNotFoundException("Transporteur introuvable"));
+        }
 
         Camion camion = camionMapper.toEntityRequest(dto);
         camion.setTransporteur(transporteur);
         camion.setImmatriculation(immatriculation);
-
-        if (camion.getDisponible() == null) {
-            camion.setDisponible(true);
-        }
+        if (camion.getDisponible() == null) {camion.setDisponible(true);}
         return camionMapper.toDto(camionRepository.save(camion));
     }
 

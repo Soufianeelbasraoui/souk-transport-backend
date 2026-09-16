@@ -27,7 +27,7 @@ public class Cargaison {
     @Column(name = "statut")
     private StatutCargaison statutCargaison = StatutCargaison.SOUMISE;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "expediteur_id")
     private Expediteur expediteur;
     @OneToMany(mappedBy = "cargaison")
