@@ -29,7 +29,7 @@ public class Trajet {
     @Enumerated(EnumType.STRING)
     @Column(name = "statut")
     private StatutTrajet statutTrajet=StatutTrajet.PUBLIE;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "camion_id",nullable = false)
     private Camion camion;
 
