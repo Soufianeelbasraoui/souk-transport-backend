@@ -42,11 +42,7 @@ public class CargaisonController {
     public ResponseEntity<CargaisonDto> consulterCargaison(@PathVariable Long id) {
         return ResponseEntity.ok(cargaisonService.consulterCargaison(id));
     }
-//    @PreAuthorize("hasAnyRole('ADMIN', 'EXPEDITEUR', 'TRANSPORTEUR')")
-//    @GetMapping
-//    public ResponseEntity<List<CargaisonDto>> listerCargaisons() {
-//        return ResponseEntity.ok(cargaisonService.listerCargaisons());
-//    }
+
     @PreAuthorize("hasAnyRole('ADMIN', 'EXPEDITEUR')")
     @GetMapping("/expediteur/{expediteurId}")
     public ResponseEntity<List<CargaisonDto>> listerCargaisonsExpediteur(@PathVariable Long expediteurId) {

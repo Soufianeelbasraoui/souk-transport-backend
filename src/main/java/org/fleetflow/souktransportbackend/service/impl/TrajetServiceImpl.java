@@ -88,10 +88,7 @@ public class TrajetServiceImpl implements TrajetService {
     }
 
     @Override
-    @Cacheable(
-            value = "trajets",
-            key = "'page:' + #page + ':size:' + #size"
-    )
+    @Cacheable(value = "trajets", key = "'page:' + #page + ':size:' + #size")
     @Transactional(readOnly = true)
     public Page<TrajetDto> listerTrajets(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);

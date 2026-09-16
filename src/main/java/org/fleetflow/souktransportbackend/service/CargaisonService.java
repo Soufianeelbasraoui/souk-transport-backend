@@ -11,7 +11,6 @@ public interface CargaisonService {
     CargaisonDto modifierCargaison(Long id, CargaisonRequestDto dto);
     void supprimerCargaison(Long id);
     CargaisonDto consulterCargaison(Long id);
-//    List<CargaisonDto> listerCargaisons();
     List<CargaisonDto> listerCargaisonsExpediteur(Long expediteurId);
     Page<CargaisonDto> listerCargaisons(int page, int size);
     List<CargaisonDto> listerParTrajet(Long trajetId);
