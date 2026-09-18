@@ -3,6 +3,8 @@ package org.fleetflow.souktransportbackend.mapper;
 import org.fleetflow.souktransportbackend.dto.request.CargaisonRequestDto;
 import org.fleetflow.souktransportbackend.dto.response.CargaisonDto;
 import org.fleetflow.souktransportbackend.entity.Cargaison;
+import org.fleetflow.souktransportbackend.entity.Reservation;
+import org.fleetflow.souktransportbackend.enums.StatutReservation;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -17,6 +19,8 @@ public interface CargaisonMapper {
     @Mapping(source = "expediteur.id", target = "expediteurId")
     @Mapping(source = "expediteur.nom", target = "expediteurNom")
     @Mapping(source = "expediteur.prenom", target = "expediteurPrenom")
+    @Mapping(target = "prix", expression = "java(getPrix(cargaison))")
+
     CargaisonDto toDto(Cargaison cargaison);
 
     List<CargaisonDto> toDtoList(List<Cargaison> cargaisons);
@@ -31,4 +35,20 @@ public interface CargaisonMapper {
     @Mapping(target = "expediteur", ignore = true)
     @Mapping(target = "reservations", ignore = true)
     void updateEntityFromDto(CargaisonRequestDto dto, @MappingTarget Cargaison cargaison);
+
+    default Double getPrix(Cargaison cargaison) {
+
+        if (cargaison.getReservations() == null) {
+            return null;
+        }
+
+        for (Reservation reservation : cargaison.getReservations()) {
+            if (reservation.getStatutReservation() == StatutReservation.ACCEPTEE) {
+                return reservation.getPrixConvenu();
+            }
+        }
+
+        return null;
+    }
+
 }

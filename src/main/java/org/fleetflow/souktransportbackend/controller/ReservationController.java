@@ -1,3 +1,5 @@
+
+
 package org.fleetflow.souktransportbackend.controller;
 
 import jakarta.validation.Valid;
@@ -12,7 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+        import java.util.List;
 
 @RestController
 @RequestMapping("/api/reservations")
@@ -63,12 +65,6 @@ public class ReservationController {
         return ResponseEntity.ok(reservationService.consulterReservation(id));
     }
 
-    @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<ReservationDto>> listerReservations() {
-        return ResponseEntity.ok(reservationService.listerReservations());
-    }
-
     @GetMapping("/page")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<ReservationDto>> listerReservations(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
@@ -104,5 +100,16 @@ public class ReservationController {
     @PreAuthorize("hasRole('TRANSPORTEUR')")
     public ResponseEntity<List<ReservationDto>> getMesReservationTransporteur(Authentication authentication){
         return ResponseEntity.ok(reservationService.mesReservationTransporteur(authentication.getName()));
+    }
+
+    @GetMapping("/expediteur/mes-reservations")
+    @PreAuthorize("hasRole('EXPEDITEUR')")
+    public ResponseEntity<Page<ReservationDto>> getMesReservationExpediteur(
+            Authentication authentication,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+
+        return ResponseEntity.ok( reservationService.mesReservationExpediteur( authentication.getName(), size, page));
     }
 }

@@ -1,3 +1,4 @@
+
 package org.fleetflow.souktransportbackend.service.impl;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -5,14 +6,14 @@ import lombok.RequiredArgsConstructor;
 import org.fleetflow.souktransportbackend.dto.request.ReservationRequestDto;
 import org.fleetflow.souktransportbackend.dto.response.ReservationDto;
 import org.fleetflow.souktransportbackend.entity.*;
-import org.fleetflow.souktransportbackend.enums.StatutCargaison;
+        import org.fleetflow.souktransportbackend.enums.StatutCargaison;
 import org.fleetflow.souktransportbackend.enums.StatutReservation;
 import org.fleetflow.souktransportbackend.enums.StatutTrajet;
 import org.fleetflow.souktransportbackend.mapper.ReservationMapper;
 import org.fleetflow.souktransportbackend.repository.*;
-import org.fleetflow.souktransportbackend.service.ReservationService;
+        import org.fleetflow.souktransportbackend.service.ReservationService;
 import org.springframework.data.domain.*;
-import org.springframework.stereotype.Service;
+        import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -108,12 +109,6 @@ public class ReservationServiceImpl implements ReservationService {
     public ReservationDto consulterReservation(Long id) {
         Reservation reservation = reservationRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Réservation introuvable : " + id));
         return reservationMapper.toDto(reservation);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<ReservationDto> listerReservations() {
-        return reservationRepository.findAll().stream().map(reservationMapper::toDto).toList();
     }
 
     @Override
@@ -227,5 +222,20 @@ public class ReservationServiceImpl implements ReservationService {
 
         User transporteur = userRepository.findByEmail(email).orElseThrow(() -> new EntityNotFoundException("Utilisateur introuvable."));
         return reservationRepository.findByTrajet_Camion_TransporteurId(transporteur.getId()).stream().map(reservationMapper::toDto).toList();
+    }
+
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<ReservationDto> mesReservationExpediteur(
+            String email,
+            int size,
+            int page
+    ) {
+
+        Expediteur expediteur = expediteurRepository.findByEmail(email) .orElseThrow(() -> new EntityNotFoundException( "Expéditeur introuvable."));
+        Pageable pageable = PageRequest.of(page, size);
+
+        return reservationRepository.findByCargaison_Expediteur_Id( expediteur.getId(),pageable).map(reservationMapper::toDto);
     }
 }

@@ -12,6 +12,7 @@ public class CargaisonDto{
     private Long id;
     private String description;
     private Double poids;
+    private Double prix;
     private StatutCargaison statutCargaison;
     private Long expediteurId;
     private String expediteurNom;

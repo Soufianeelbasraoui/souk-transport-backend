@@ -17,6 +17,5 @@ public class CargaisonRequestDto {
     @NotNull(message = "Le poids est obligatoire")
     private Double poids;
 
-    @NotNull(message = "L'expéditeur est obligatoire")
     private Long expediteurId;
 }

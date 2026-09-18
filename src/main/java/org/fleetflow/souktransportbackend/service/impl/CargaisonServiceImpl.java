@@ -8,6 +8,7 @@ import org.fleetflow.souktransportbackend.dto.response.CargaisonDto;
 import org.fleetflow.souktransportbackend.entity.Cargaison;
 import org.fleetflow.souktransportbackend.entity.Expediteur;
 import org.fleetflow.souktransportbackend.entity.User;
+import org.fleetflow.souktransportbackend.enums.Role;
 import org.fleetflow.souktransportbackend.enums.StatutCargaison;
 import org.fleetflow.souktransportbackend.enums.StatutReservation;
 import org.fleetflow.souktransportbackend.mapper.CargaisonMapper;
@@ -32,15 +33,28 @@ public class CargaisonServiceImpl implements CargaisonService {
     private final ExpediteurRepository expediteurRepository;
     private final CargaisonMapper cargaisonMapper;
     private final UserRepository userRepository;
-
     @Override
-    public CargaisonDto ajouterCargaison(CargaisonRequestDto dto) {
+    public CargaisonDto ajouterCargaison(CargaisonRequestDto dto, String email) {
         if (dto.getPoids() == null || dto.getPoids() <= 0) {
             throw new IllegalArgumentException("Le poids doit être supérieur à 0");
         }
-        Expediteur expediteur = expediteurRepository.findById(dto.getExpediteurId()).orElseThrow(() -> new EntityNotFoundException("Expéditeur introuvable avec l'id : " + dto.getExpediteurId()));
+
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new EntityNotFoundException("Utilisateur introuvable"));
+
+        Expediteur expediteur;
+
+        if (user.getRole() == Role.ADMIN) {
+            if (dto.getExpediteurId() == null) {
+                throw new IllegalArgumentException("L'id de l'expéditeur est obligatoire pour un ADMIN");
+            }
+            expediteur = expediteurRepository.findById(dto.getExpediteurId()).orElseThrow(() -> new EntityNotFoundException("Expéditeur introuvable avec l'id : " + dto.getExpediteurId()));
+        } else {
+            expediteur = expediteurRepository.findByEmail(email).orElseThrow(() -> new EntityNotFoundException("Expéditeur introuvable pour cet utilisateur"));
+        }
+
         Cargaison cargaison = cargaisonMapper.toEntity(dto);
         cargaison.setExpediteur(expediteur);
+
         return cargaisonMapper.toDto(cargaisonRepository.save(cargaison));
     }
 
@@ -67,6 +81,7 @@ public class CargaisonServiceImpl implements CargaisonService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public CargaisonDto consulterCargaison(Long id) {
         Cargaison cargaison = cargaisonRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Cargaison introuvable avec l'id : " + id));
         return cargaisonMapper.toDto(cargaison);
@@ -96,5 +111,21 @@ public class CargaisonServiceImpl implements CargaisonService {
 //        Pageable pageable = PageRequest.of(page, size);
 //        return cargaisonRepository.findByDescriptionContainingIgnoreCase(keyword, pageable).map(cargaisonMapper::toDto);
 //    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<CargaisonDto> mesCargaisonsDisponibles(String email){
+        User user=userRepository.findByEmail(email).orElseThrow(()->new EntityNotFoundException("Utilisateur introuvable"));
+
+        return cargaisonMapper.toDtoList(cargaisonRepository.findCargaisonsDisponibles(user.getId()));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<CargaisonDto>  mesCargaisons(String email){
+        User user=userRepository.findByEmail(email).orElseThrow(()->new EntityNotFoundException("expediteur introvable"));
+        return cargaisonMapper.toDtoList(cargaisonRepository.findCargaisonsByExpediteurId(user.getId()));
+    }
+
 
 }
