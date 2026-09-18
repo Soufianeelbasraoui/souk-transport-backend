@@ -16,6 +16,8 @@ import org.fleetflow.souktransportbackend.repository.UserRepository;
 import org.fleetflow.souktransportbackend.security.JwtUtil;
 import org.fleetflow.souktransportbackend.service.AuthService;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -67,14 +69,14 @@ public class AuthServiceImpl implements AuthService {
         transporteur.setTelephone(request.getTelephone());
         transporteur.setVille(request.getVille());
         transporteur.setRole(Role.TRANSPORTEUR);
-        transporteur.setStatutUser(StatutUser.ACTIF);
+
+        transporteur.setStatutUser(StatutUser.EN_ATTENTE);
         transporteur.setCin(request.getCin());
         transporteur.setNumeroPermis(request.getNumeroPermis());
-
-        Transporteur savedTransporteur = userRepository.save(transporteur);
-        String token = jwtUtil.generateToken(savedTransporteur.getEmail(), savedTransporteur.getNom(), savedTransporteur.getRole().name());
-        return new AuthResponseDto(token);
+        userRepository.save(transporteur);
+        return new AuthResponseDto(null);
     }
+
     @Override
     public AuthResponseDto register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -91,20 +93,23 @@ public class AuthServiceImpl implements AuthService {
         admin.setRole(Role.ADMIN);
         admin.setStatutUser(StatutUser.ACTIF);
         Admin savedAdmin = userRepository.save(admin);
-
-        String token = jwtUtil.generateToken(
-                savedAdmin.getEmail(),
-                savedAdmin.getNom(),
-                savedAdmin.getRole().name()
-        );
-
+        String token = jwtUtil.generateToken( savedAdmin.getEmail(), savedAdmin.getNom(), savedAdmin.getRole().name());
         return new AuthResponseDto(token);
     }
 
     @Override
     public AuthResponseDto login(LoginRequestDto request) {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
-        User user = userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
+        User user = userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new BadCredentialsException("Email ou mot de passe incorrect"));
+
+        if (user.getStatutUser() == StatutUser.EN_ATTENTE) {
+            throw new DisabledException("Votre compte est en attente de validation par un administrateur.");
+        }
+
+        if (user.getStatutUser() == StatutUser.SUSPENDU) {
+            throw new DisabledException("Votre compte est suspendu. Veuillez contacter l'administrateur.");
+        }
+
+        authenticationManager.authenticate( new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
         String token = jwtUtil.generateToken(user.getEmail(), user.getNom(), user.getRole().name());
         return new AuthResponseDto(token);
     }

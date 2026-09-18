@@ -1,10 +1,13 @@
 package org.fleetflow.souktransportbackend.controller;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import org.fleetflow.souktransportbackend.dto.request.CargaisonRequestDto;
 import org.fleetflow.souktransportbackend.dto.response.CargaisonDto;
+import org.fleetflow.souktransportbackend.entity.User;
+import org.fleetflow.souktransportbackend.repository.UserRepository;
 import org.fleetflow.souktransportbackend.service.CargaisonService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -20,10 +23,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CargaisonController {
     private final CargaisonService cargaisonService;
+    private final UserRepository userRepository;
+
     @PreAuthorize("hasAnyRole('ADMIN', 'EXPEDITEUR')")
     @PostMapping
-    public ResponseEntity<CargaisonDto> ajouterCargaison(@Valid @RequestBody CargaisonRequestDto dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(cargaisonService.ajouterCargaison(dto));
+    public ResponseEntity<CargaisonDto> ajouterCargaison(@Valid @RequestBody CargaisonRequestDto dto,Authentication authentication) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(cargaisonService.ajouterCargaison(dto,authentication.getName()));
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'EXPEDITEUR')")
     @PutMapping("/{id}")
@@ -68,5 +73,16 @@ public class CargaisonController {
 //        return ResponseEntity.ok(cargaisonService.rechercher(keyword, page, size));
 //    }
 
+    @PreAuthorize("hasRole('EXPEDITEUR')")
+    @GetMapping("/mes-cargaisons-disponibles")
+    public ResponseEntity<List<CargaisonDto>> mesCargaisonsDisponibles(Authentication authentication){
+         return ResponseEntity.ok(cargaisonService.mesCargaisonsDisponibles(authentication.getName()));
+    }
+
+    @PreAuthorize("hasAnyRole('EXPEDITEUR')")
+    @GetMapping("/mes-cargaisons")
+    public ResponseEntity<List<CargaisonDto>> mesCargaisons(Authentication authentication){
+        return ResponseEntity.ok(cargaisonService.mesCargaisons(authentication.getName()));
+    }
 
 }

@@ -7,7 +7,7 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 
 public interface CargaisonService {
-    CargaisonDto ajouterCargaison(CargaisonRequestDto dto);
+    CargaisonDto ajouterCargaison(CargaisonRequestDto dto,String email);
     CargaisonDto modifierCargaison(Long id, CargaisonRequestDto dto);
     void supprimerCargaison(Long id);
     CargaisonDto consulterCargaison(Long id);
@@ -16,5 +16,7 @@ public interface CargaisonService {
     List<CargaisonDto> listerParTrajet(Long trajetId);
 //    Page<CargaisonDto> rechercher(String keyword, int page, int size);
 
+    List<CargaisonDto> mesCargaisonsDisponibles(String email);
 
+    List<CargaisonDto> mesCargaisons(String email);
 }

@@ -3,9 +3,12 @@ package org.fleetflow.souktransportbackend.repository;
 import org.fleetflow.souktransportbackend.dto.response.ReservationDto;
 import org.fleetflow.souktransportbackend.entity.Reservation;
 import org.fleetflow.souktransportbackend.enums.StatutReservation;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 
+import java.nio.channels.FileChannel;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,4 +26,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
 
     Long countByCargaisonExpediteurIdAndStatutReservation( Long expediteurId, StatutReservation statutReservation);
-}
+
+    Page<Reservation> findByCargaison_Expediteur_Id(
+            Long expediteurId,
+            Pageable pageable
+    );}
