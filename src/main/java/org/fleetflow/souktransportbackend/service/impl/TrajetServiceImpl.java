@@ -130,4 +130,10 @@ public class TrajetServiceImpl implements TrajetService {
         User transporteur = userRepository.findByEmail(email).orElseThrow(() -> new EntityNotFoundException("Utilisateur introuvable"));
         return trajetRepository.countByCamionTransporteurId(transporteur.getId());
     }
+
+    @Override
+    public Page<TrajetDto> rechercher(String recherche, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return trajetRepository.findByVilleDepartContainingIgnoreCaseOrVilleArriveeContainingIgnoreCase(recherche, recherche, pageable).map(trajetMapper::toDto);
+    }
 }

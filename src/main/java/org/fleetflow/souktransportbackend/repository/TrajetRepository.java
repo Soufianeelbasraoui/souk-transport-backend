@@ -21,4 +21,10 @@ public interface TrajetRepository extends JpaRepository<Trajet, Long> {
     Long countByStatutTrajet(StatutTrajet statutTrajet);
 
     Page<Trajet> findAllByOrderByIdDesc(Pageable pageable);
+    Page<Trajet> findByVilleDepartContainingIgnoreCaseOrVilleArriveeContainingIgnoreCase(
+            String villeDepart,
+            String villeArrivee,
+            Pageable pageable
+    );
+
 }

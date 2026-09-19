@@ -23,9 +23,5 @@ public interface ReservationService {
     ReservationDto annulerReservation(Long reservationId);
 
     List<ReservationDto> mesReservationTransporteur(String email);
-    Page<ReservationDto> mesReservationExpediteur(
-            String email,
-            int size,
-            int page
-    );
+    Page<ReservationDto> mesReservationExpediteur( String email, int size, int page );
 }
