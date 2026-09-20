@@ -26,11 +26,7 @@ public interface CargaisonService {
     );
 
 
-    Page<CargaisonDto> rechercherParDescription(
-            String description,
-            int page,
-            int size
-    );
+    Page<CargaisonDto> rechercherParDescription(String description,int page, int size);
 
     Page<CargaisonDto> filtrerParStatut(
             StatutCargaison statut,

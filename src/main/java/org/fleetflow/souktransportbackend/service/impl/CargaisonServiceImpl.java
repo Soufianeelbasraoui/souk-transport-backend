@@ -58,6 +58,7 @@ public class CargaisonServiceImpl implements CargaisonService {
     }
 
     @Override
+    @Transactional
     public CargaisonDto modifierCargaison(Long id, CargaisonRequestDto dto) {
         Cargaison cargaison = cargaisonRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Cargaison introuvable avec l'id : " + id));
         if (dto.getPoids() != null && dto.getPoids() <= 0) {
@@ -110,23 +111,20 @@ public class CargaisonServiceImpl implements CargaisonService {
     @Transactional(readOnly = true)
     public List<CargaisonDto> mesCargaisonsDisponibles(String email){
         User user=userRepository.findByEmail(email).orElseThrow(()->new EntityNotFoundException("Utilisateur introuvable"));
-
         return cargaisonMapper.toDtoList(cargaisonRepository.findCargaisonsDisponibles(user.getId()));
     }
+
     @Transactional(readOnly = true)
     @Override
     public Page<CargaisonDto> mesCargaisons(String email, StatutCargaison statut, int page,int size) {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new EntityNotFoundException("Expéditeur introuvable"));
         Pageable pageable = PageRequest.of(page, size);
-
         Page<Cargaison> cargaisons;
-
         if (statut == null) {
             cargaisons = cargaisonRepository.findCargaisonsByExpediteurId(user.getId(), pageable );
         } else {
             cargaisons = cargaisonRepository .findByExpediteurIdAndStatutCargaison(  user.getId(), statut,  pageable );
         }
-
         return cargaisons.map(cargaisonMapper::toDto);
     }
 
