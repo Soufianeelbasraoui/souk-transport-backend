@@ -10,4 +10,5 @@ import java.util.Optional;
 public interface ExpediteurRepository extends JpaRepository<Expediteur, Long> {
     Page<Expediteur> findAll(Pageable pageable);
     Optional<Expediteur> findByEmail(String email);
+
 }
