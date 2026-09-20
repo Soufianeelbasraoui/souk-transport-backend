@@ -98,8 +98,11 @@ public class ReservationController {
 
     @GetMapping("/transporteur/mes-reservations")
     @PreAuthorize("hasRole('TRANSPORTEUR')")
-    public ResponseEntity<List<ReservationDto>> getMesReservationTransporteur(Authentication authentication){
-        return ResponseEntity.ok(reservationService.mesReservationTransporteur(authentication.getName()));
+    public ResponseEntity<Page<ReservationDto>> getMesReservationTransporteur(
+            Authentication authentication,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size){
+        return ResponseEntity.ok(reservationService.mesReservationTransporteur(authentication.getName(),page,size));
     }
 
     @GetMapping("/expediteur/mes-reservations")
