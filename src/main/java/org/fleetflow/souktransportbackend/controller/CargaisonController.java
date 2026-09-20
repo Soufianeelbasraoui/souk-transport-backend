@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.fleetflow.souktransportbackend.dto.request.CargaisonRequestDto;
 import org.fleetflow.souktransportbackend.dto.response.CargaisonDto;
 import org.fleetflow.souktransportbackend.entity.User;
+import org.fleetflow.souktransportbackend.enums.StatutCargaison;
 import org.fleetflow.souktransportbackend.repository.UserRepository;
 import org.fleetflow.souktransportbackend.service.CargaisonService;
 import org.springframework.data.domain.Page;
@@ -67,11 +68,6 @@ public class CargaisonController {
         return ResponseEntity.ok(cargaisonService.listerParTrajet(trajetId));
     }
 
-//    @PreAuthorize("hasAnyRole('ADMIN', 'EXPEDITEUR', 'TRANSPORTEUR')")
-//    @GetMapping("/recherche")
-//    public ResponseEntity<Page<CargaisonDto>> rechercher(@RequestParam String keyword, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
-//        return ResponseEntity.ok(cargaisonService.rechercher(keyword, page, size));
-//    }
 
     @PreAuthorize("hasRole('EXPEDITEUR')")
     @GetMapping("/mes-cargaisons-disponibles")
@@ -79,10 +75,34 @@ public class CargaisonController {
          return ResponseEntity.ok(cargaisonService.mesCargaisonsDisponibles(authentication.getName()));
     }
 
-    @PreAuthorize("hasAnyRole('EXPEDITEUR')")
-    @GetMapping("/mes-cargaisons")
-    public ResponseEntity<List<CargaisonDto>> mesCargaisons(Authentication authentication){
-        return ResponseEntity.ok(cargaisonService.mesCargaisons(authentication.getName()));
+@GetMapping("/mes-cargaisons")
+@PreAuthorize("hasRole('EXPEDITEUR')")
+public ResponseEntity<Page<CargaisonDto>> mesCargaisons(
+        Authentication authentication,
+        @RequestParam(required = false) StatutCargaison statut,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "9") int size
+) {
+    return ResponseEntity.ok( cargaisonService.mesCargaisons(authentication.getName(), statut,page, size ));
+}
+    @GetMapping("/search")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Page<CargaisonDto>> rechercherParDescription(
+            @RequestParam String description,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return ResponseEntity.ok(cargaisonService.rechercherParDescription(description, page, size ));
+    }
+
+    @GetMapping("/filter/status")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Page<CargaisonDto>> filtrerParStatut(
+            @RequestParam StatutCargaison statut,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return ResponseEntity.ok( cargaisonService.filtrerParStatut(statut, page, size ));
     }
 
 }

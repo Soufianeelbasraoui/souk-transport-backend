@@ -13,8 +13,10 @@ public interface ReservationService {
     void supprimerReservation(Long id);
     ReservationDto consulterReservation(Long id);
     Page<ReservationDto> listerReservations(int page,int size);
+
     List<ReservationDto> listerParTrajet(Long trajetId);
     List<ReservationDto> listerParCargaison(Long cargaisonId);
+
     Long countReservationsExpediteur(String email);
     Long countReservationsTransporteur(String email);
 
@@ -22,10 +24,6 @@ public interface ReservationService {
     ReservationDto refuserReservation(Long reservationId);
     ReservationDto annulerReservation(Long reservationId);
 
-    List<ReservationDto> mesReservationTransporteur(String email);
-    Page<ReservationDto> mesReservationExpediteur(
-            String email,
-            int size,
-            int page
-    );
+    Page<ReservationDto> mesReservationTransporteur(String email,int size,int page);
+    Page<ReservationDto> mesReservationExpediteur( String email, int size, int page );
 }

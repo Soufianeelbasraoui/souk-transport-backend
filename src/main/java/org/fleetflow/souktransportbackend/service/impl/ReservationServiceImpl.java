@@ -218,10 +218,11 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ReservationDto> mesReservationTransporteur(String email) {
+    public Page<ReservationDto> mesReservationTransporteur(String email,int page,int size) {
 
         User transporteur = userRepository.findByEmail(email).orElseThrow(() -> new EntityNotFoundException("Utilisateur introuvable."));
-        return reservationRepository.findByTrajet_Camion_TransporteurId(transporteur.getId()).stream().map(reservationMapper::toDto).toList();
+        Pageable pageable=PageRequest.of(page,size);
+        return reservationRepository.findByTrajet_Camion_TransporteurId(transporteur.getId(), pageable).map(reservationMapper::toDto);
     }
 
 

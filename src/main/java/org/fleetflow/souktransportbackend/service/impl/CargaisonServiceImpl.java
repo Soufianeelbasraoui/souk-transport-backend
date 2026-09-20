@@ -10,7 +10,6 @@ import org.fleetflow.souktransportbackend.entity.Expediteur;
 import org.fleetflow.souktransportbackend.entity.User;
 import org.fleetflow.souktransportbackend.enums.Role;
 import org.fleetflow.souktransportbackend.enums.StatutCargaison;
-import org.fleetflow.souktransportbackend.enums.StatutReservation;
 import org.fleetflow.souktransportbackend.mapper.CargaisonMapper;
 import org.fleetflow.souktransportbackend.repository.CargaisonRepository;
 import org.fleetflow.souktransportbackend.repository.ExpediteurRepository;
@@ -59,6 +58,7 @@ public class CargaisonServiceImpl implements CargaisonService {
     }
 
     @Override
+    @Transactional
     public CargaisonDto modifierCargaison(Long id, CargaisonRequestDto dto) {
         Cargaison cargaison = cargaisonRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Cargaison introuvable avec l'id : " + id));
         if (dto.getPoids() != null && dto.getPoids() <= 0) {
@@ -105,26 +105,42 @@ public class CargaisonServiceImpl implements CargaisonService {
         return cargaisonMapper.toDtoList(cargaisonRepository.findByReservations_Trajet_Id(trajetId));
     }
 
-//    @Override
-//    @Cacheable(value = "cargaisonsSearch", key = "#keyword + ':page:' + #page + ':size:' + #size")
-//    public Page<CargaisonDto> rechercher(String keyword, int page, int size) {
-//        Pageable pageable = PageRequest.of(page, size);
-//        return cargaisonRepository.findByDescriptionContainingIgnoreCase(keyword, pageable).map(cargaisonMapper::toDto);
-//    }
+
 
     @Override
     @Transactional(readOnly = true)
     public List<CargaisonDto> mesCargaisonsDisponibles(String email){
         User user=userRepository.findByEmail(email).orElseThrow(()->new EntityNotFoundException("Utilisateur introuvable"));
-
         return cargaisonMapper.toDtoList(cargaisonRepository.findCargaisonsDisponibles(user.getId()));
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Page<CargaisonDto> mesCargaisons(String email, StatutCargaison statut, int page,int size) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new EntityNotFoundException("Expéditeur introuvable"));
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Cargaison> cargaisons;
+        if (statut == null) {
+            cargaisons = cargaisonRepository.findCargaisonsByExpediteurId(user.getId(), pageable );
+        } else {
+            cargaisons = cargaisonRepository .findByExpediteurIdAndStatutCargaison(  user.getId(), statut,  pageable );
+        }
+        return cargaisons.map(cargaisonMapper::toDto);
+    }
+
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<CargaisonDto> rechercherParDescription( String description,int page, int size ) {
+        Pageable pageable = PageRequest.of(page, size);
+        return cargaisonRepository.findByDescriptionContainingIgnoreCase(description, pageable) .map(cargaisonMapper::toDto);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<CargaisonDto>  mesCargaisons(String email){
-        User user=userRepository.findByEmail(email).orElseThrow(()->new EntityNotFoundException("expediteur introvable"));
-        return cargaisonMapper.toDtoList(cargaisonRepository.findCargaisonsByExpediteurId(user.getId()));
+    public Page<CargaisonDto> filtrerParStatut( StatutCargaison statut,int page,  int size ) {
+        Pageable pageable = PageRequest.of(page, size);
+        return cargaisonRepository.findByStatutCargaison(statut, pageable).map(cargaisonMapper::toDto);
     }
 
 

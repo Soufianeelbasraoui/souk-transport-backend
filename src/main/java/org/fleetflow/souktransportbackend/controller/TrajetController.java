@@ -72,13 +72,41 @@ public class TrajetController {
     }
     @GetMapping("/mesTrajets")
     @PreAuthorize("hasAnyRole('ADMIN', 'TRANSPORTEUR')")
-    public ResponseEntity<List<TrajetDto>> getMesTrajets(Authentication authentication) {
-        return ResponseEntity.ok(trajetService.mesTrajets(authentication.getName()));
+    public ResponseEntity<Page<TrajetDto>> getMesTrajets(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            Authentication authentication
+    ) {
+        return ResponseEntity.ok(trajetService.mesTrajets(authentication.getName(), page, size));
     }
 
     @GetMapping("/countTrajet")
     @PreAuthorize("hasAnyRole('ADMIN', 'TRANSPORTEUR')")
     public ResponseEntity<Long> getCountTrajet(Authentication authentication){
         return ResponseEntity.ok(trajetService.countTrajet(authentication.getName()));
+    }
+    @GetMapping("/search")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Page<TrajetDto>> rechercher(
+            @RequestParam String recherche,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return ResponseEntity.ok(trajetService.rechercher(recherche, page, size));
+    }
+
+    @GetMapping( "/rechercher/trajet")
+    @Operation(summary = "Rechercher des trajets par ville de départ et ville d'arrivée")
+    public ResponseEntity<Page<TrajetDto>> rechercherTrajets(
+            @RequestParam(required = false) String villeDepart,
+            @RequestParam(required = false) String depart,
+            @RequestParam(required = false) String villeArrivee,
+            @RequestParam(required = false) String arrivee,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        String vDepart = (villeDepart != null && !villeDepart.isBlank()) ? villeDepart : depart;
+        String vArrivee = (villeArrivee != null && !villeArrivee.isBlank()) ? villeArrivee : arrivee;
+        return ResponseEntity.ok(trajetService.rechercherTrajets(vDepart, vArrivee, page, size));
     }
 }

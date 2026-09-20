@@ -20,6 +20,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
 @Service
@@ -95,17 +97,6 @@ public class CamionServiceImpl implements CamionService {
     }
 
     @Override
-    public List<CamionDto> listerCamionsTransporteur(Long transporteurId) {
-        return camionMapper.toDtoList(camionRepository.findByTransporteurId(transporteurId));
-    }
-
-    @Override
-    public Page<CamionDto> listerCamionsTransporteur(Long transporteurId, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
-        return camionRepository.findByTransporteurId(transporteurId, pageable).map(camionMapper::toDto);
-    }
-
-    @Override
     public List<CamionDto> listerParType(Long transporteurId, String type) {
         TypeCamion typeCamion;
         try {
@@ -133,15 +124,28 @@ public class CamionServiceImpl implements CamionService {
     }
 
     @Override
-    public List<CamionDto> mesCamions(String email) {
+    public Page<CamionDto> mesCamions(int page, int size, String email) {
+        User transporteur = userRepository.findByEmail(email) .orElseThrow(() ->   new EntityNotFoundException("Utilisateur introuvable"));
+        Pageable pageable = PageRequest.of(page, size,Sort.by("id").descending());
+        return camionRepository.findByTransporteurId(transporteur.getId(), pageable).map(camionMapper::toDto);
+    }
+    @Override
+    @Transactional
+    public Page<CamionDto> rechercherMesCamionParMarque(String email, String marque, int page, int size) {
         User transporteur = userRepository.findByEmail(email).orElseThrow(() -> new EntityNotFoundException("Utilisateur introuvable"));
-        List<Camion> camions = camionRepository.findByTransporteurId(transporteur.getId());
-        return camionMapper.toDtoList(camions);
+        Pageable pageable = PageRequest.of(page, size);
+        return camionRepository.findByTransporteurIdAndMarqueContainingIgnoreCase(transporteur.getId(), marque, pageable).map(camionMapper::toDto);
     }
 
     @Override
     public Page<CamionDto> listerCamions(int page ,int size){
         Pageable pageable=PageRequest.of(page,size);
         return camionRepository.findAll(pageable).map(camionMapper::toDto);
+    }
+
+    @Override
+    public Page<CamionDto> rechercherParMarque(String marque,int page,int size){
+        Pageable pageable=PageRequest.of(page,size);
+        return camionRepository.findByMarqueContainingIgnoreCase(marque, pageable).map(camionMapper::toDto);
     }
 }

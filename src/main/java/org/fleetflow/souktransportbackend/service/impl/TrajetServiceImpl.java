@@ -15,10 +15,11 @@ import org.fleetflow.souktransportbackend.repository.TrajetRepository;
 import org.fleetflow.souktransportbackend.repository.UserRepository;
 import org.fleetflow.souktransportbackend.service.TrajetService;
 
-import org.springframework.cache.annotation.Cacheable;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,57 +36,29 @@ public class TrajetServiceImpl implements TrajetService {
     private final TrajetMapper trajetMapper;
 
     @Override
+
     public TrajetDto ajouterTrajet(TrajetRequestDto dto) {
-
-        Camion camion = camionRepository.findById(dto.getCamionId())
-                .orElseThrow(() ->
-                        new EntityNotFoundException(
-                                "Camion introuvable avec l'id : " + dto.getCamionId()
-                        )
-                );
-
+        Camion camion = camionRepository.findById(dto.getCamionId()).orElseThrow(() -> new EntityNotFoundException("Camion introuvable avec l'id : " + dto.getCamionId()));
         if (!Boolean.TRUE.equals(camion.getDisponible())) {
             throw new RuntimeException("Le camion sélectionné n'est pas disponible.");
         }
-
         Trajet trajet = trajetMapper.toEntityRequest(dto);
-
         trajet.setCamion(camion);
-
-        if (trajet.getStatutTrajet() == null) {
+        if (trajet.getStatutTrajet()==null) {
             trajet.setStatutTrajet(StatutTrajet.PUBLIE);
         }
-
         Trajet trajetSaved = trajetRepository.save(trajet);
-
         return trajetMapper.toDto(trajetSaved);
     }
 
     @Override
     public TrajetDto modifierTrajet(Long id, TrajetRequestDto dto) {
-
-        Trajet trajet = trajetRepository.findById(id)
-                .orElseThrow(() ->
-                        new EntityNotFoundException(
-                                "Trajet introuvable avec l'id : " + id
-                        )
-                );
-
+        Trajet trajet = trajetRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Trajet introuvable avec l'id : " + id));
         if (dto.getCamionId() != null) {
-
-            Camion camion = camionRepository.findById(dto.getCamionId())
-                    .orElseThrow(() ->
-                            new EntityNotFoundException(
-                                    "Camion introuvable avec l'id : " + dto.getCamionId()
-                            )
-                    );
-
+            Camion camion = camionRepository.findById(dto.getCamionId()).orElseThrow(() -> new EntityNotFoundException("Camion introuvable avec l'id : " + dto.getCamionId()));
             if (!Boolean.TRUE.equals(camion.getDisponible())) {
-                throw new RuntimeException(
-                        "Le camion sélectionné n'est pas disponible."
-                );
+                throw new RuntimeException("Le camion sélectionné n'est pas disponible.");
             }
-
             trajet.setCamion(camion);
         }
 
@@ -98,59 +71,30 @@ public class TrajetServiceImpl implements TrajetService {
 
     @Override
     public void supprimerTrajet(Long id) {
-
         if (!trajetRepository.existsById(id)) {
-            throw new EntityNotFoundException(
-                    "Trajet introuvable avec l'id : " + id
-            );
+            throw new EntityNotFoundException("Trajet introuvable avec l'id : " + id);
         }
-
         trajetRepository.deleteById(id);
     }
-
     @Override
     @Transactional(readOnly = true)
     public TrajetDto consulterTrajet(Long id) {
-
-        Trajet trajet = trajetRepository.findById(id)
-                .orElseThrow(() ->
-                        new EntityNotFoundException("Trajet introuvable")
-                );
-
+        Trajet trajet = trajetRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Trajet introuvable"));
         TrajetDto dto = trajetMapper.toDto(trajet);
-
-        Long nombreReservations =
-                trajetRepository.countReservationsByTrajetId(trajet.getId());
-
+        Long nombreReservations = trajetRepository.countReservationsByTrajetId(trajet.getId());
         dto.setNombreReservations(nombreReservations.intValue());
-
         return dto;
     }
 
     @Override
-    @Cacheable(
-            value = "trajets",
-            key = "'page:' + #page + ':size:' + #size"
-    )
     @Transactional(readOnly = true)
     public Page<TrajetDto> listerTrajets(int page, int size) {
 
         Pageable pageable = PageRequest.of(page, size);
 
-        return trajetRepository.findAll(pageable)
-                .map(trajet -> {
-
-                    TrajetDto dto = trajetMapper.toDto(trajet);
-
-                    Long nombreReservations =
-                            trajetRepository.countReservationsByTrajetId(
-                                    trajet.getId()
-                            );
-
-                    dto.setNombreReservations(
-                            nombreReservations.intValue()
-                    );
-
+        return trajetRepository.findAll(pageable).map(trajet -> {TrajetDto dto = trajetMapper.toDto(trajet);
+                    Long nombreReservations = trajetRepository.countReservationsByTrajetId(trajet.getId());
+                    dto.setNombreReservations(nombreReservations.intValue());
                     return dto;
                 });
     }
@@ -158,77 +102,52 @@ public class TrajetServiceImpl implements TrajetService {
     @Override
     @Transactional(readOnly = true)
     public List<TrajetDto> listerTrajetsPublies() {
-
-        return trajetRepository
-                .findByStatutTrajet(StatutTrajet.PUBLIE)
-                .stream()
-                .map(trajetMapper::toDto)
-                .toList();
+        return trajetRepository.findByStatutTrajet(StatutTrajet.PUBLIE).stream().map(trajetMapper::toDto).toList();
     }
-
     @Override
     @Transactional(readOnly = true)
-    public List<TrajetDto> mesTrajets(String email) {
+    public Page<TrajetDto> mesTrajets(String email, int page, int size) {
+        User transporteur = userRepository.findByEmail(email).orElseThrow(() -> new EntityNotFoundException("Utilisateur introuvable"));
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Trajet> trajets = trajetRepository.findByCamionTransporteurId(transporteur.getId(), pageable);
 
-        User transporteur = userRepository.findByEmail(email)
-                .orElseThrow(() ->
-                        new EntityNotFoundException(
-                                "Utilisateur introuvable"
-                        )
-                );
-
-        List<Trajet> trajets =
-                trajetRepository.findByCamionTransporteurId(
-                        transporteur.getId()
-                );
-
-        List<TrajetDto> result = new ArrayList<>();
-
-        for (Trajet trajet : trajets) {
-
+        return trajets.map(trajet -> {
             TrajetDto dto = trajetMapper.toDto(trajet);
-
-            Long nombreReservations =
-                    trajetRepository.countReservationsByTrajetId(
-                            trajet.getId()
-                    );
-
-            dto.setNombreReservations(
-                    nombreReservations.intValue()
-            );
-
-            result.add(dto);
-        }
-
-        return result;
+            Long nombreReservations = trajetRepository.countReservationsByTrajetId(trajet.getId());
+            dto.setNombreReservations(nombreReservations.intValue());
+            return dto;
+        });
     }
 
     @Override
     @Transactional(readOnly = true)
     public Page<TrajetDto> recentTrajets(int page, int size) {
-
         Pageable pageable = PageRequest.of(page, size);
-
-        return trajetRepository
-                .findByStatutTrajetOrderByDateDepartDesc(
-                        StatutTrajet.PUBLIE,
-                        pageable
-                )
-                .map(trajetMapper::toDto);
+        return trajetRepository.findByStatutTrajetOrderByDateDepartDesc(StatutTrajet.PUBLIE, pageable).map(trajetMapper::toDto);
     }
 
     @Override
     public Long countTrajet(String email) {
+        User transporteur = userRepository.findByEmail(email).orElseThrow(() -> new EntityNotFoundException("Utilisateur introuvable"));
+        return trajetRepository.countByCamionTransporteurId(transporteur.getId());
+    }
 
-        User transporteur = userRepository.findByEmail(email)
-                .orElseThrow(() ->
-                        new EntityNotFoundException(
-                                "Utilisateur introuvable"
-                        )
-                );
+    @Override
+    public Page<TrajetDto> rechercher(String recherche, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return trajetRepository.findByVilleDepartContainingIgnoreCaseOrVilleArriveeContainingIgnoreCase(recherche, recherche, pageable).map(trajetMapper::toDto);
+    }
 
-        return trajetRepository.countByCamionTransporteurId(
-                transporteur.getId()
-        );
+    @Override
+    @Transactional(readOnly = true)
+    public Page<TrajetDto> rechercherTrajets(String villeDepart, String villeArrivee, int page, int size) {
+
+        String patternDepart = (villeDepart != null && !villeDepart.isBlank()) ? "%" + villeDepart.trim().toLowerCase() + "%" : null;
+        String patternArrivee = (villeArrivee != null && !villeArrivee.isBlank()) ? "%" + villeArrivee.trim().toLowerCase() + "%" : null;
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("dateDepart").ascending());
+        Page<Trajet> trajets = trajetRepository.rechercherTrajets(patternDepart, patternArrivee, pageable);
+
+        return trajets.map(trajetMapper::toDto);
     }
 }

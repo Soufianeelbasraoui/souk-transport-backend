@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
-    Optional<Reservation> findByCargaison_Id(Long cargaisonId);
+//    Optional<Reservation> findByCargaison_Id(Long cargaisonId);
 
     List<Reservation> findByTrajetId(Long trajetId);
     List<Reservation> findByCargaisonId(Long cargaisonId);
@@ -21,13 +21,10 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     long countByTrajetCamionTransporteurId(Long transporteurId);
     long countByCargaisonExpediteurId(Long expediteurId);
 
-    List<Reservation> findByTrajet_Camion_TransporteurId(Long transporteurId);
+    Page<Reservation> findByTrajet_Camion_TransporteurId(Long transporteurId,Pageable pageable);
     List<Reservation> findFirst5ByOrderByIdDesc();
 
 
     Long countByCargaisonExpediteurIdAndStatutReservation( Long expediteurId, StatutReservation statutReservation);
 
-    Page<Reservation> findByCargaison_Expediteur_Id(
-            Long expediteurId,
-            Pageable pageable
-    );}
+    Page<Reservation> findByCargaison_Expediteur_Id(Long expediteurId, Pageable pageable);}

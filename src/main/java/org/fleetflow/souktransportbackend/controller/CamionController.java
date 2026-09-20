@@ -49,17 +49,7 @@ public class CamionController {
     public ResponseEntity<CamionDto> consulterCamion(@PathVariable Long id) {
         return ResponseEntity.ok(camionService.consulterCamion(id));
     }
-    @PreAuthorize("hasAnyRole('ADMIN', 'TRANSPORTEUR')")
-    @GetMapping("/transporteur/{transporteurId}")
-    public ResponseEntity<List<CamionDto>> listerCamionsTransporteur(@PathVariable Long transporteurId) {
-        return ResponseEntity.ok(camionService.listerCamionsTransporteur(transporteurId));
-    }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'TRANSPORTEUR')")
-    @GetMapping("/transporteur/{transporteurId}/page")
-    public ResponseEntity<Page<CamionDto>> listerCamionsTransporteur(@PathVariable Long transporteurId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
-        return ResponseEntity.ok(camionService.listerCamionsTransporteur(transporteurId, page, size));
-    }
     @PreAuthorize("hasAnyRole('ADMIN', 'TRANSPORTEUR', 'EXPEDITEUR')")
     @GetMapping("/transporteur/{transporteurId}/type")
     public ResponseEntity<List<CamionDto>> listerParType(@PathVariable Long transporteurId, @RequestParam String type) {
@@ -79,15 +69,39 @@ public class CamionController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'TRANSPORTEUR')")
     @GetMapping("/mesCamions")
-    public ResponseEntity<List<CamionDto>> getMesCamions(Authentication authentication){
-        List<CamionDto> mesCamion=camionService.mesCamions(authentication.getName());
-        return ResponseEntity.ok(mesCamion);
-
+    public ResponseEntity<Page<CamionDto>> getMesCamions(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "9") int size,
+            Authentication authentication
+    ) {
+        return ResponseEntity.ok( camionService.mesCamions( page, size,authentication.getName() ));
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'TRANSPORTEUR')")
+    @GetMapping( "/transporteur/searchByMarque")
+    public ResponseEntity<Page<CamionDto>> searchMesCamionByMarque(
+            Authentication authentication,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam String marque
+    ) {
+        return ResponseEntity.ok(
+                camionService.rechercherMesCamionParMarque(
+                        authentication.getName(),
+                        marque,
+                        page,
+                        size
+                )
+        );
+    }
     @GetMapping("/lister")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<CamionDto>> listerCamions(@RequestParam(defaultValue = "0")int page,@RequestParam(defaultValue = "10") int size){
         return ResponseEntity.ok(camionService.listerCamions(page,size));
+    }
+
+    @GetMapping("/searchByMarque")
+    public ResponseEntity<Page<CamionDto>> searchByMarque(@RequestParam String marque, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(camionService.rechercherParMarque(marque, page, size));
     }
 }

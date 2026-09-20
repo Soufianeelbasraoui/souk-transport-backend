@@ -5,7 +5,6 @@ import org.fleetflow.souktransportbackend.dto.response.DashboardExpediteurDto;
 
 public interface DashboardService {
     DashboardAdminDto getDashboardAdmin();
-
     DashboardExpediteurDto dashboardExpediteur(Long expediteurId);
 
 
