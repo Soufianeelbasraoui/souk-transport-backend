@@ -7,17 +7,21 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 
 public interface TrajetService {
+
     TrajetDto ajouterTrajet(TrajetRequestDto dto);
-
     TrajetDto modifierTrajet(Long id, TrajetRequestDto dto);
-
     void supprimerTrajet(Long id);
     TrajetDto consulterTrajet(Long id);
     Page<TrajetDto> listerTrajets(int page, int size);
-
     List<TrajetDto> listerTrajetsPublies();
-    List<TrajetDto> mesTrajets(String email);
+
+    Page<TrajetDto> mesTrajets(String email, int page, int size);
+
     Page<TrajetDto> recentTrajets(int page, int size);
+
     Long countTrajet(String email);
+
     Page<TrajetDto> rechercher(String recherche, int page, int size);
+
+    Page<TrajetDto> rechercherTrajets(String villeDepart, String villeArrivee, int page, int size);
 }

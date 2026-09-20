@@ -19,6 +19,7 @@ import org.fleetflow.souktransportbackend.service.TrajetService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -105,17 +106,17 @@ public class TrajetServiceImpl implements TrajetService {
     }
     @Override
     @Transactional(readOnly = true)
-    public List<TrajetDto> mesTrajets(String email) {
+    public Page<TrajetDto> mesTrajets(String email, int page, int size) {
         User transporteur = userRepository.findByEmail(email).orElseThrow(() -> new EntityNotFoundException("Utilisateur introuvable"));
-        List<Trajet> trajets = trajetRepository.findByCamionTransporteurId(transporteur.getId());
-        List<TrajetDto> result = new ArrayList<>();
-        for (Trajet trajet : trajets) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Trajet> trajets = trajetRepository.findByCamionTransporteurId(transporteur.getId(), pageable);
+
+        return trajets.map(trajet -> {
             TrajetDto dto = trajetMapper.toDto(trajet);
             Long nombreReservations = trajetRepository.countReservationsByTrajetId(trajet.getId());
             dto.setNombreReservations(nombreReservations.intValue());
-            result.add(dto);
-        }
-        return result;
+            return dto;
+        });
     }
 
     @Override
@@ -135,5 +136,18 @@ public class TrajetServiceImpl implements TrajetService {
     public Page<TrajetDto> rechercher(String recherche, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return trajetRepository.findByVilleDepartContainingIgnoreCaseOrVilleArriveeContainingIgnoreCase(recherche, recherche, pageable).map(trajetMapper::toDto);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<TrajetDto> rechercherTrajets(String villeDepart, String villeArrivee, int page, int size) {
+
+        String patternDepart = (villeDepart != null && !villeDepart.isBlank()) ? "%" + villeDepart.trim().toLowerCase() + "%" : null;
+        String patternArrivee = (villeArrivee != null && !villeArrivee.isBlank()) ? "%" + villeArrivee.trim().toLowerCase() + "%" : null;
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("dateDepart").ascending());
+        Page<Trajet> trajets = trajetRepository.rechercherTrajets(patternDepart, patternArrivee, pageable);
+
+        return trajets.map(trajetMapper::toDto);
     }
 }
