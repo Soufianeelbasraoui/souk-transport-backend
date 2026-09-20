@@ -20,6 +20,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
 @Service
@@ -126,6 +128,13 @@ public class CamionServiceImpl implements CamionService {
         User transporteur = userRepository.findByEmail(email) .orElseThrow(() ->   new EntityNotFoundException("Utilisateur introuvable"));
         Pageable pageable = PageRequest.of(page, size,Sort.by("id").descending());
         return camionRepository.findByTransporteurId(transporteur.getId(), pageable).map(camionMapper::toDto);
+    }
+    @Override
+    @Transactional
+    public Page<CamionDto> rechercherMesCamionParMarque(String email, String marque, int page, int size) {
+        User transporteur = userRepository.findByEmail(email).orElseThrow(() -> new EntityNotFoundException("Utilisateur introuvable"));
+        Pageable pageable = PageRequest.of(page, size);
+        return camionRepository.findByTransporteurIdAndMarqueContainingIgnoreCase(transporteur.getId(), marque, pageable).map(camionMapper::toDto);
     }
 
     @Override

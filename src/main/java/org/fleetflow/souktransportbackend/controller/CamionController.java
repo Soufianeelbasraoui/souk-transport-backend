@@ -76,6 +76,24 @@ public class CamionController {
     ) {
         return ResponseEntity.ok( camionService.mesCamions( page, size,authentication.getName() ));
     }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'TRANSPORTEUR')")
+    @GetMapping( "/transporteur/searchByMarque")
+    public ResponseEntity<Page<CamionDto>> searchMesCamionByMarque(
+            Authentication authentication,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam String marque
+    ) {
+        return ResponseEntity.ok(
+                camionService.rechercherMesCamionParMarque(
+                        authentication.getName(),
+                        marque,
+                        page,
+                        size
+                )
+        );
+    }
     @GetMapping("/lister")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<CamionDto>> listerCamions(@RequestParam(defaultValue = "0")int page,@RequestParam(defaultValue = "10") int size){
