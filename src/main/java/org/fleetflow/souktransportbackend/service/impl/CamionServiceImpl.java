@@ -34,6 +34,7 @@ public class CamionServiceImpl implements CamionService {
     private final UserRepository userRepository;
 
     @Override
+    @Transactional
     public CamionDto ajouterCamion(CamionRequestDto dto, String emailUserConnecte) {
 
         if (dto.getImmatriculation() == null || dto.getImmatriculation().isBlank()) {
@@ -68,6 +69,7 @@ public class CamionServiceImpl implements CamionService {
     }
 
     @Override
+    @Transactional
     public CamionDto modifierCamion(Long id, CamionRequestDto dto) {
         Camion camion = camionRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Camion introuvable avec l'id : " + id));
         if (dto.getImmatriculation() != null) {
@@ -84,7 +86,9 @@ public class CamionServiceImpl implements CamionService {
 
         return camionMapper.toDto(camionRepository.save(camion));
     }
+
     @Override
+    @Transactional
     public void supprimerCamion(Long id) {
         Camion camion = camionRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Camion introuvable avec l'id : " + id));
         camionRepository.delete(camion);

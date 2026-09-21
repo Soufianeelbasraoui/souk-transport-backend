@@ -36,12 +36,15 @@ public class TrajetServiceImpl implements TrajetService {
     private final TrajetMapper trajetMapper;
 
     @Override
-
+    @Transactional
     public TrajetDto ajouterTrajet(TrajetRequestDto dto) {
         Camion camion = camionRepository.findById(dto.getCamionId()).orElseThrow(() -> new EntityNotFoundException("Camion introuvable avec l'id : " + dto.getCamionId()));
         if (!Boolean.TRUE.equals(camion.getDisponible())) {
             throw new RuntimeException("Le camion sélectionné n'est pas disponible.");
         }
+        camion.setDisponible(false);
+        camionRepository.save(camion);
+
         Trajet trajet = trajetMapper.toEntityRequest(dto);
         trajet.setCamion(camion);
         if (trajet.getStatutTrajet()==null) {
@@ -52,14 +55,24 @@ public class TrajetServiceImpl implements TrajetService {
     }
 
     @Override
+    @Transactional
     public TrajetDto modifierTrajet(Long id, TrajetRequestDto dto) {
         Trajet trajet = trajetRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Trajet introuvable avec l'id : " + id));
         if (dto.getCamionId() != null) {
-            Camion camion = camionRepository.findById(dto.getCamionId()).orElseThrow(() -> new EntityNotFoundException("Camion introuvable avec l'id : " + dto.getCamionId()));
-            if (!Boolean.TRUE.equals(camion.getDisponible())) {
-                throw new RuntimeException("Le camion sélectionné n'est pas disponible.");
+            if (trajet.getCamion() == null || !dto.getCamionId().equals(trajet.getCamion().getId())) {
+                Camion ancienCamion = trajet.getCamion();
+                if (ancienCamion != null) {
+                    ancienCamion.setDisponible(true);
+                    camionRepository.save(ancienCamion);
+                }
+                Camion nouveauCamion = camionRepository.findById(dto.getCamionId()).orElseThrow(() -> new EntityNotFoundException("Camion introuvable avec l'id : " + dto.getCamionId()));
+                if (!Boolean.TRUE.equals(nouveauCamion.getDisponible())) {
+                    throw new RuntimeException("Le camion sélectionné n'est pas disponible.");
+                }
+                nouveauCamion.setDisponible(false);
+                camionRepository.save(nouveauCamion);
+                trajet.setCamion(nouveauCamion);
             }
-            trajet.setCamion(camion);
         }
 
         trajetMapper.updateEntityFromDto(dto, trajet);
@@ -70,12 +83,17 @@ public class TrajetServiceImpl implements TrajetService {
     }
 
     @Override
+    @Transactional
     public void supprimerTrajet(Long id) {
-        if (!trajetRepository.existsById(id)) {
-            throw new EntityNotFoundException("Trajet introuvable avec l'id : " + id);
+        Trajet trajet = trajetRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Trajet introuvable avec l'id : " + id));
+        Camion camion = trajet.getCamion();
+        if (camion != null) {
+            camion.setDisponible(true);
+            camionRepository.save(camion);
         }
-        trajetRepository.deleteById(id);
+        trajetRepository.delete(trajet);
     }
+
     @Override
     @Transactional(readOnly = true)
     public TrajetDto consulterTrajet(Long id) {
