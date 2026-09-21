@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: write   # required to submit dependency graph snapshots
+      contents: write
 
     steps:
       - name: Checkout code

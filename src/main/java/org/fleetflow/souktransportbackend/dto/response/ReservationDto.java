@@ -3,6 +3,7 @@ package org.fleetflow.souktransportbackend.dto.response;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.fleetflow.souktransportbackend.enums.StatutCargaison;
 import org.fleetflow.souktransportbackend.enums.StatutReservation;
 import java.time.LocalDateTime;
 
@@ -15,8 +16,17 @@ public class ReservationDto {
     private Double poidsReserve;
     private Double prixConvenu;
     private StatutReservation statutReservation;
+
     private Long trajetId;
-    private Long cargaisonId;
     private String villeDepart;
     private String villeArrivee;
+
+    private Long cargaisonId;
+    private String description;
+    private Double poids;
+    private StatutCargaison statutCargaison;
+
+    private Long expediteurId;
+    private String expediteurNom;
+    private String expediteurPrenom;
 }

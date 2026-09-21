@@ -228,11 +228,7 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<ReservationDto> mesReservationExpediteur(
-            String email,
-            int size,
-            int page
-    ) {
+    public Page<ReservationDto> mesReservationExpediteur(  String email,  int size,   int page) {
 
         Expediteur expediteur = expediteurRepository.findByEmail(email) .orElseThrow(() -> new EntityNotFoundException( "Expéditeur introuvable."));
         Pageable pageable = PageRequest.of(page, size);

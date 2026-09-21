@@ -33,7 +33,7 @@ class CargaisonServiceImplTest {
     private CargaisonServiceImpl cargaisonService;
 
     @Test
-    void consulterCargaison_shouldReturnCargaison() {
+    void consulterCargaison() {
 
         Long id = 1L;
 
@@ -51,7 +51,7 @@ class CargaisonServiceImplTest {
         verify(cargaisonMapper).toDto(cargaison);
     }
     @Test
-    void listerCargaisons_shouldReturnPageOfCargaisons() {
+    void listerCargaisons() {
 
         int page = 0;
         int size = 10;
@@ -82,7 +82,7 @@ class CargaisonServiceImplTest {
     }
 
     @Test
-    void rechercherParDescription_shouldReturnMatchingCargaisons() {
+    void rechercherParDescription() {
 
         String description = "Meubles";
 
