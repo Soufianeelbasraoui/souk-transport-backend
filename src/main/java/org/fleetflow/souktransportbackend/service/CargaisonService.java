@@ -15,22 +15,11 @@ public interface CargaisonService {
     List<CargaisonDto> listerCargaisonsExpediteur(Long expediteurId);
     Page<CargaisonDto> listerCargaisons(int page, int size);
     List<CargaisonDto> listerParTrajet(Long trajetId);
-//    Page<CargaisonDto> rechercher(String keyword, int page, int size);
 
     List<CargaisonDto> mesCargaisonsDisponibles(String email);
-    Page<CargaisonDto> mesCargaisons(
-            String email,
-            StatutCargaison statut,
-            int page,
-            int size
-    );
-
+    Page<CargaisonDto> mesCargaisons(String email, StatutCargaison statut, int page, int size);
 
     Page<CargaisonDto> rechercherParDescription(String description,int page, int size);
 
-    Page<CargaisonDto> filtrerParStatut(
-            StatutCargaison statut,
-            int page,
-            int size
-    );
+    Page<CargaisonDto> filtrerParStatut( StatutCargaison statut, int page, int size);
 }

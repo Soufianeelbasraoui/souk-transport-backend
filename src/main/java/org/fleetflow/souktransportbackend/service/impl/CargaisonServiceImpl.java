@@ -33,6 +33,7 @@ public class CargaisonServiceImpl implements CargaisonService {
     private final CargaisonMapper cargaisonMapper;
     private final UserRepository userRepository;
     @Override
+    @Transactional
     public CargaisonDto ajouterCargaison(CargaisonRequestDto dto, String email) {
         if (dto.getPoids() == null || dto.getPoids() <= 0) {
             throw new IllegalArgumentException("Le poids doit être supérieur à 0");
@@ -77,6 +78,7 @@ public class CargaisonServiceImpl implements CargaisonService {
     }
 
     @Override
+    @Transactional
     public void supprimerCargaison(Long id) {
         Cargaison cargaison = cargaisonRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Cargaison introuvable avec l'id : " + id));
         if (cargaison.getStatutCargaison() != StatutCargaison.SOUMISE) {
