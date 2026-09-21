@@ -39,7 +39,7 @@ class CamionServiceImplTest {
     private CamionServiceImpl camionService;
 
     @Test
-    void ajouterCamion_shouldAddCamionSuccessfully() {
+    void ajouterCamion() {
 
         String email = "omar@gmail.com";
 
@@ -82,7 +82,7 @@ class CamionServiceImplTest {
     }
 
     @Test
-    void modifierCamion_shouldUpdateCamionSuccessfully() {
+    void modifierCamion() {
 
         Long camionId = 1L;
 
@@ -122,7 +122,7 @@ class CamionServiceImplTest {
 
 
     @Test
-    void supprimerCamion_shouldDeleteCamionSuccessfully() {
+    void supprimerCamion() {
 
         Long camionId = 1L;
 
