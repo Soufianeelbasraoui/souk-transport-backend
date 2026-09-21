@@ -11,9 +11,15 @@ import org.mapstruct.MappingTarget;
 public interface ReservationMapper {
 
     @Mapping(target = "trajetId", source = "trajet.id")
+    @Mapping(target = "villeDepart", source = "trajet.villeDepart")
+    @Mapping(target = "villeArrivee", source = "trajet.villeArrivee")
     @Mapping(target = "cargaisonId", source = "cargaison.id")
-    @Mapping(source = "trajet.villeDepart", target = "villeDepart")
-    @Mapping(source = "trajet.villeArrivee", target = "villeArrivee")
+    @Mapping(target = "description", source = "cargaison.description")
+    @Mapping(target = "poids", source = "cargaison.poids")
+    @Mapping(target = "statutCargaison", source = "cargaison.statutCargaison")
+    @Mapping(target = "expediteurId", source = "cargaison.expediteur.id")
+    @Mapping(target = "expediteurNom", source = "cargaison.expediteur.nom")
+    @Mapping(target = "expediteurPrenom", source = "cargaison.expediteur.prenom")
     ReservationDto toDto(Reservation entity);
 
     @Mapping(target = "id", ignore = true)

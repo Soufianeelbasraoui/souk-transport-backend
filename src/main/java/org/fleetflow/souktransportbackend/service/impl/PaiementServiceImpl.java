@@ -4,12 +4,14 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.fleetflow.souktransportbackend.dto.request.PaiementRequestDto;
 import org.fleetflow.souktransportbackend.dto.response.PaiementDto;
+import org.fleetflow.souktransportbackend.entity.Camion;
 import org.fleetflow.souktransportbackend.entity.Cargaison;
 import org.fleetflow.souktransportbackend.entity.Paiement;
 import org.fleetflow.souktransportbackend.entity.Reservation;
 import org.fleetflow.souktransportbackend.entity.Trajet;
 import org.fleetflow.souktransportbackend.enums.*;
 import org.fleetflow.souktransportbackend.mapper.PaiementMapper;
+import org.fleetflow.souktransportbackend.repository.CamionRepository;
 import org.fleetflow.souktransportbackend.repository.CargaisonRepository;
 import org.fleetflow.souktransportbackend.repository.PaiementRepository;
 import org.fleetflow.souktransportbackend.repository.ReservationRepository;
@@ -32,14 +34,13 @@ public class PaiementServiceImpl implements PaiementService {
     private final PaiementMapper paiementMapper;
     private final CargaisonRepository cargaisonRepository;
     private final TrajetRepository trajetRepository;
+    private final CamionRepository camionRepository;
 
     @Override
     @Transactional
     public PaiementDto ajouterPaiement(PaiementRequestDto dto) {
 
-        Reservation reservation = reservationRepository
-                .findById(dto.getReservationId())
-                .orElseThrow(() ->  new EntityNotFoundException(  "Réservation introuvable avec l'id : " + dto.getReservationId()));
+        Reservation reservation = reservationRepository.findById(dto.getReservationId()).orElseThrow(() ->  new EntityNotFoundException(  "Réservation introuvable avec l'id : " + dto.getReservationId()));
 
         if (reservation.getStatutReservation() != StatutReservation.ACCEPTEE) {
             throw new IllegalStateException(  "Le paiement est possible uniquement pour une réservation acceptée.");
@@ -118,6 +119,12 @@ public class PaiementServiceImpl implements PaiementService {
         if (toutesLivrees) {
             trajet.setStatutTrajet(StatutTrajet.TERMINE);
             trajetRepository.save(trajet);
+
+            Camion camion = trajet.getCamion();
+            if (camion != null) {
+                camion.setDisponible(true);
+                camionRepository.save(camion);
+            }
         }
         paiementRepository.save(paiement);
         return paiementMapper.toDto(paiement);
