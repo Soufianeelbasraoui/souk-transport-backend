@@ -134,8 +134,8 @@ Ce diagramme représente les interactions entre les trois acteurs du système (A
 
 Ce diagramme illustre la structure des entités du système et leurs relations : `User`, `Transporteur`, `Expediteur`, `Admin`, `Camion`, `Trajet`, `Cargaison`, `Reservation`, `Paiement`.
 
-```md
-<img width="571" height="350" alt="image" src="https://github.com/user-attachments/assets/2869daff-ebb0-4720-912f-5ae8b8e09a26" />
+<img width="571" height="350" alt="Capture d&#39;écran 2026-09-22 174818" src="https://github.com/user-attachments/assets/8f8f9629-2795-4332-945b-374e6717c6b9" />
+
 
 ```
 
