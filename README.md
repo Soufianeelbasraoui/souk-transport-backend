@@ -149,9 +149,9 @@ Ce diagramme représente les interactions entre les trois acteurs du système (A
 
 Ce diagramme illustre la structure des entités du système et leurs relations : `User`, `Transporteur`, `Expediteur`, `Admin`, `Camion`, `Trajet`, `Cargaison`, `Reservation`, `Paiement`.
 
-```md
-![img_1.png](img_1.png)
-```
+
+![Capture d'écran 2026-09-22 174818.png](../../Pictures/Screenshots/Capture%20d%27%C3%A9cran%202026-09-22%20174818.png)
+
 
 **Explication :** ce diagramme montre l'héritage entre `User` et les trois rôles (`Admin`, `Transporteur`, `Expediteur`), ainsi que les relations entre `Trajet`, `Cargaison` et `Reservation`, cette dernière servant de lien central entre une cargaison et le trajet sur lequel elle est réservée.
 
