@@ -55,17 +55,17 @@ public class CamionController {
     public ResponseEntity<List<CamionDto>> listerParType(@PathVariable Long transporteurId, @RequestParam String type) {
         return ResponseEntity.ok(camionService.listerParType(transporteurId, type));
     }
-    @PreAuthorize("hasAnyRole('ADMIN', 'TRANSPORTEUR', 'EXPEDITEUR')")
-    @GetMapping("/transporteur/{transporteurId}/capacite")
-    public ResponseEntity<List<CamionDto>> listerParCapaciteSuperieure(@PathVariable Long transporteurId, @RequestParam Double capacite) {
-        return ResponseEntity.ok(camionService.listerParCapaciteSuperieure(transporteurId, capacite));
-    }
+//    @PreAuthorize("hasAnyRole('ADMIN', 'TRANSPORTEUR', 'EXPEDITEUR')")
+//    @GetMapping("/transporteur/{transporteurId}/capacite")
+//    public ResponseEntity<List<CamionDto>> listerParCapaciteSuperieure(@PathVariable Long transporteurId, @RequestParam Double capacite) {
+//        return ResponseEntity.ok(camionService.listerParCapaciteSuperieure(transporteurId, capacite));
+//    }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'TRANSPORTEUR')")
-    @GetMapping("/transporteur/{transporteurId}/tri")
-    public ResponseEntity<Page<CamionDto>> trierCamions(@PathVariable Long transporteurId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "id") String sortBy, @RequestParam(defaultValue = "desc") String direction) {
-        return ResponseEntity.ok(camionService.trierCamions(transporteurId, page, size, sortBy, direction));
-    }
+//    @PreAuthorize("hasAnyRole('ADMIN', 'TRANSPORTEUR')")
+//    @GetMapping("/transporteur/{transporteurId}/tri")
+//    public ResponseEntity<Page<CamionDto>> trierCamions(@PathVariable Long transporteurId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "id") String sortBy, @RequestParam(defaultValue = "desc") String direction) {
+//        return ResponseEntity.ok(camionService.trierCamions(transporteurId, page, size, sortBy, direction));
+//    }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'TRANSPORTEUR')")
     @GetMapping("/mesCamions")

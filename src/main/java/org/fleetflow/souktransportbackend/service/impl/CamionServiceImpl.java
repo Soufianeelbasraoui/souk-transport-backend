@@ -111,21 +111,21 @@ public class CamionServiceImpl implements CamionService {
         return camionMapper.toDtoList(camionRepository.findByTransporteurIdAndType(transporteurId, typeCamion));
     }
 
-    @Override
-    public List<CamionDto> listerParCapaciteSuperieure(Long transporteurId, Double capacite) {
-        return camionMapper.toDtoList(camionRepository.findByTransporteurIdAndCapaciteGreaterThanEqual(transporteurId, capacite));
-    }
+//    @Override
+//    public List<CamionDto> listerParCapaciteSuperieure(Long transporteurId, Double capacite) {
+//        return camionMapper.toDtoList(camionRepository.findByTransporteurIdAndCapaciteGreaterThanEqual(transporteurId, capacite));
+//    }
 
-    @Override
-    public Page<CamionDto> trierCamions(Long transporteurId, int page, int size, String sortBy, String direction) {
-        List<String> champsAutorises = List.of("id", "marque", "modele", "capacite", "immatriculation");
-        if (!champsAutorises.contains(sortBy)) {
-            throw new IllegalArgumentException("Champ de tri invalide : " + sortBy);
-        }
-        Sort sort = direction.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
-        Pageable pageable = PageRequest.of(page, size, sort);
-        return camionRepository.findByTransporteurId(transporteurId, pageable).map(camionMapper::toDto);
-    }
+//    @Override
+//    public Page<CamionDto> trierCamions(Long transporteurId, int page, int size, String sortBy, String direction) {
+//        List<String> champsAutorises = List.of("id", "marque", "modele", "capacite", "immatriculation");
+//        if (!champsAutorises.contains(sortBy)) {
+//            throw new IllegalArgumentException("Champ de tri invalide : " + sortBy);
+//        }
+//        Sort sort = direction.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+//        Pageable pageable = PageRequest.of(page, size, sort);
+//        return camionRepository.findByTransporteurId(transporteurId, pageable).map(camionMapper::toDto);
+//    }
 
     @Override
     public Page<CamionDto> mesCamions(int page, int size, String email) {

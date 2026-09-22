@@ -80,10 +80,13 @@ public class CargaisonServiceImpl implements CargaisonService {
     @Override
     @Transactional
     public void supprimerCargaison(Long id) {
-        Cargaison cargaison = cargaisonRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Cargaison introuvable avec l'id : " + id));
-        if (cargaison.getStatutCargaison() != StatutCargaison.SOUMISE) {
-            throw new IllegalStateException("Impossible de supprimer une cargaison qui est en transit ou livrée.");
+
+        Cargaison cargaison = cargaisonRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Cargaison introuvable avec l'id : " + id ));
+
+        if (cargaison.getStatutCargaison() == StatutCargaison.EN_TRANSIT) {
+            throw new IllegalStateException(  "Impossible de supprimer une cargaison qui est actuellement en transit.");
         }
+
         cargaisonRepository.delete(cargaison);
     }
 
@@ -106,11 +109,11 @@ public class CargaisonServiceImpl implements CargaisonService {
         Pageable pageable = PageRequest.of(page, size);
         return cargaisonRepository.findAll(pageable).map(cargaisonMapper::toDto);
     }
-
-    @Override
-    public List<CargaisonDto> listerParTrajet(Long trajetId) {
-        return cargaisonMapper.toDtoList(cargaisonRepository.findByReservations_Trajet_Id(trajetId));
-    }
+//
+//    @Override
+//    public List<CargaisonDto> listerParTrajet(Long trajetId) {
+//        return cargaisonMapper.toDtoList(cargaisonRepository.findByReservations_Trajet_Id(trajetId));
+//    }
 
 
 

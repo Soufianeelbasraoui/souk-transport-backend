@@ -61,12 +61,12 @@ public class CargaisonController {
     public ResponseEntity<Page<CargaisonDto>> listerCargaisons(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         return ResponseEntity.ok(cargaisonService.listerCargaisons(page, size));
     }
-
-    @PreAuthorize("hasAnyRole('ADMIN', 'EXPEDITEUR', 'TRANSPORTEUR')")
-    @GetMapping("/trajet/{trajetId}")
-    public ResponseEntity<List<CargaisonDto>> listerParTrajet(@PathVariable Long trajetId) {
-        return ResponseEntity.ok(cargaisonService.listerParTrajet(trajetId));
-    }
+//
+//    @PreAuthorize("hasAnyRole('ADMIN', 'EXPEDITEUR', 'TRANSPORTEUR')")
+//    @GetMapping("/trajet/{trajetId}")
+//    public ResponseEntity<List<CargaisonDto>> listerParTrajet(@PathVariable Long trajetId) {
+//        return ResponseEntity.ok(cargaisonService.listerParTrajet(trajetId));
+//    }
 
 
     @PreAuthorize("hasRole('EXPEDITEUR')")

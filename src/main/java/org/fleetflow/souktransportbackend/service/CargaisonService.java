@@ -14,7 +14,7 @@ public interface CargaisonService {
     CargaisonDto consulterCargaison(Long id);
     List<CargaisonDto> listerCargaisonsExpediteur(Long expediteurId);
     Page<CargaisonDto> listerCargaisons(int page, int size);
-    List<CargaisonDto> listerParTrajet(Long trajetId);
+   // List<CargaisonDto> listerParTrajet(Long trajetId);
 
     List<CargaisonDto> mesCargaisonsDisponibles(String email);
     Page<CargaisonDto> mesCargaisons(String email, StatutCargaison statut, int page, int size);

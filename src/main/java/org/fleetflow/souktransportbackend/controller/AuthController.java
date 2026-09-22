@@ -28,7 +28,7 @@ public class AuthController {
     public ResponseEntity<AuthResponseDto> registerTransporteur(@Valid @RequestBody TransporteurRequestDto request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(authService.registerTransporteur(request));
     }
-    @PostMapping("register")
+    @PostMapping("/register")
     public ResponseEntity<AuthResponseDto> register(@Valid @RequestBody RegisterRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(authService.register(request));
     }

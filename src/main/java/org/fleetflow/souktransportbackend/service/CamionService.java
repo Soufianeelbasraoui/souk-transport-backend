@@ -13,8 +13,8 @@ public interface CamionService {
     void supprimerCamion(Long id);
     CamionDto consulterCamion(Long id);
     List<CamionDto> listerParType(Long transporteurId, String type);
-    List<CamionDto> listerParCapaciteSuperieure(Long transporteurId, Double capacite);
-    Page<CamionDto> trierCamions(Long transporteurId, int page, int size, String sortBy, String direction);
+//    List<CamionDto> listerParCapaciteSuperieure(Long transporteurId, Double capacite);
+//    Page<CamionDto> trierCamions(Long transporteurId, int page, int size, String sortBy, String direction);
     Page<CamionDto> mesCamions(int page, int size, String email);    Page<CamionDto> listerCamions(int page,int size);
     Page<CamionDto> rechercherParMarque(String marque,int page,int size);
 

@@ -118,25 +118,25 @@ public class ReservationServiceImpl implements ReservationService {
         return reservationRepository.findAll(pageable).map(reservationMapper::toDto);
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public List<ReservationDto> listerParTrajet(Long trajetId) {
-        return reservationRepository.findByTrajetId(trajetId).stream().map(reservationMapper::toDto).toList();
-    }
+//    @Override
+//    @Transactional(readOnly = true)
+//    public List<ReservationDto> listerParTrajet(Long trajetId) {
+//        return reservationRepository.findByTrajetId(trajetId).stream().map(reservationMapper::toDto).toList();
+//    }
+//
+//    @Override
+//    @Transactional(readOnly = true)
+//    public List<ReservationDto> listerParCargaison(Long cargaisonId) {
+//        return reservationRepository.findByCargaisonId(cargaisonId).stream().map(reservationMapper::toDto).toList();
+//    }
 
-    @Override
-    @Transactional(readOnly = true)
-    public List<ReservationDto> listerParCargaison(Long cargaisonId) {
-        return reservationRepository.findByCargaisonId(cargaisonId).stream().map(reservationMapper::toDto).toList();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Long countReservationsExpediteur(String email) {
-
-        User expediteur = expediteurRepository.findByEmail(email).orElseThrow(() -> new EntityNotFoundException("Expéditeur introuvable."));
-        return reservationRepository.countByCargaisonExpediteurId(expediteur.getId());
-    }
+//    @Override
+//    @Transactional(readOnly = true)
+//    public Long countReservationsExpediteur(String email) {
+//
+//        User expediteur = expediteurRepository.findByEmail(email).orElseThrow(() -> new EntityNotFoundException("Expéditeur introuvable."));
+//        return reservationRepository.countByCargaisonExpediteurId(expediteur.getId());
+//    }
 
     @Override
     @Transactional(readOnly = true)
@@ -228,11 +228,11 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<ReservationDto> mesReservationExpediteur(  String email,  int size,   int page) {
+    public Page<ReservationDto> mesReservationExpediteur(String email, int page, int size) {
 
-        Expediteur expediteur = expediteurRepository.findByEmail(email) .orElseThrow(() -> new EntityNotFoundException( "Expéditeur introuvable."));
+        Expediteur expediteur = expediteurRepository.findByEmail(email).orElseThrow(() -> new EntityNotFoundException("Expéditeur introuvable."));
         Pageable pageable = PageRequest.of(page, size);
 
-        return reservationRepository.findByCargaison_Expediteur_Id( expediteur.getId(),pageable).map(reservationMapper::toDto);
+        return reservationRepository.findByCargaison_Expediteur_Id(expediteur.getId(), pageable).map(reservationMapper::toDto);
     }
 }
