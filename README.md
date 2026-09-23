@@ -86,22 +86,7 @@ cd souk-transport-backend
 ```bash
 mvn clean install -DskipTests
 ```
-
-### 5.5 Variables d'environnement
-
-Créer le fichier `application.yml` (ou `.env` si vous utilisez Docker Compose) :
-
-```env
-SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/souktransport
-SPRING_DATASOURCE_USERNAME=root
-SPRING_DATASOURCE_PASSWORD=
-SPRING_DATA_REDIS_HOST=localhost
-SPRING_DATA_REDIS_PORT=6379
-JWT_SECRET=votre_cle_secrete_encodee_en_base64
-JWT_EXPIRATION=86400000
-```
-
-### 5.6 Lancer le projet
+### 5.5 Lancer le projet
 
 **Option A — en local avec Maven :**
 ```bash
@@ -113,7 +98,7 @@ mvn spring-boot:run
 docker-compose up --build
 ```
 
-### 5.7 Ouvrir le projet
+### 5.6 Ouvrir le projet
 
 Après le lancement, l'API est accessible sur :
 
@@ -149,9 +134,16 @@ Ce diagramme représente les interactions entre les trois acteurs du système (A
 
 Ce diagramme illustre la structure des entités du système et leurs relations : `User`, `Transporteur`, `Expediteur`, `Admin`, `Camion`, `Trajet`, `Cargaison`, `Reservation`, `Paiement`.
 
+<<<<<<< HEAD
 
 ![Capture d'écran 2026-09-22 174818.png](../../Pictures/Screenshots/Capture%20d%27%C3%A9cran%202026-09-22%20174818.png)
 
+=======
+<img width="571" height="350" alt="Capture d&#39;écran 2026-09-22 174818" src="https://github.com/user-attachments/assets/8f8f9629-2795-4332-945b-374e6717c6b9" />
+
+
+```
+>>>>>>> 8818a69f822c7230ce1a37939300a953fba4c858
 
 **Explication :** ce diagramme montre l'héritage entre `User` et les trois rôles (`Admin`, `Transporteur`, `Expediteur`), ainsi que les relations entre `Trajet`, `Cargaison` et `Reservation`, cette dernière servant de lien central entre une cargaison et le trajet sur lequel elle est réservée.
 
