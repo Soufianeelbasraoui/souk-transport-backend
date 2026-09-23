@@ -1,4 +1,5 @@
 name: Java CI with Maven
+
 on:
   push:
     branches:
@@ -20,11 +21,7 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
-    permissions:
-      contents: write
 
     steps:
       - name: Checkout code
@@ -40,6 +37,11 @@ jobs:
       - name: Make mvnw executable
         run: chmod +x ./mvnw
 
-      - name: Build and test with Maven
+      - name: Build and test
+        env:
+          SPRING_DATASOURCE_URL: jdbc:h2:mem:testdb
+          SPRING_DATASOURCE_USERNAME: sa
+          SPRING_DATASOURCE_PASSWORD:
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          JWT_EXPIRATION: 86400000
         run: ./mvnw -B clean verify
-
