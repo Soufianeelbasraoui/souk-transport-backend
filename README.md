@@ -115,51 +115,27 @@ http://localhost:8080/swagger-ui.html
 **Point de vigilance :** ne jamais publier le fichier `.env` réel, les mots de passe de base de données, la clé secrète JWT ou tout autre identifiant sensible dans le dépôt Git. Utilisez un fichier `.env.example` pour illustrer la structure attendue.
 
 ---
-
 ## 6. Conception UML
 
-Cette section présente les diagrammes de conception réalisés en amont du développement.
+Cette section présente les principaux diagrammes UML réalisés pour concevoir et structurer l'application Souk Transport.
 
-### 6.1 Diagramme de cas d'utilisation (Use Case)
+### 6.1 Diagramme de cas d'utilisation
 
-Ce diagramme représente les interactions entre les trois acteurs du système (Administrateur, Transporteur, Expéditeur) et les fonctionnalités principales de la plateforme.
+Le diagramme de cas d'utilisation présente les interactions entre les trois acteurs principaux du système : **Administrateur, Transporteur et Expéditeur**.
 
-```md
+<img width="517" height="428" alt="Capture d&#39;écran 2026-09-24 120044" src="https://github.com/user-attachments/assets/e32aa180-6a44-4cb1-b3a1-d3a51158d680" />
 
-```
+### 6.2 Diagramme de classes
 
-**Explication :** ce diagramme montre que le Transporteur peut publier et gérer ses trajets et camions, que l'Expéditeur peut créer des cargaisons et réserver des trajets, et que l'Administrateur supervise l'ensemble des utilisateurs et des opérations de la plateforme.
+Le diagramme de classes présente les principales entités du système et leurs relations : `User`, `Transporteur`, `Expediteur`, `Admin`, `Camion`, `Trajet`, `Cargaison`, `Reservation` et `Paiement`.
 
-### 6.2 Diagramme de classes (Class Diagram)
-
-Ce diagramme illustre la structure des entités du système et leurs relations : `User`, `Transporteur`, `Expediteur`, `Admin`, `Camion`, `Trajet`, `Cargaison`, `Reservation`, `Paiement`.
-
-<<<<<<< HEAD
-
-![Capture d'écran 2026-09-22 174818.png](../../Pictures/Screenshots/Capture%20d%27%C3%A9cran%202026-09-22%20174818.png)
-
-=======
 <img width="571" height="350" alt="Capture d&#39;écran 2026-09-22 174818" src="https://github.com/user-attachments/assets/8f8f9629-2795-4332-945b-374e6717c6b9" />
 
+### 6.3 Diagramme de séquence
 
-```
->>>>>>> 8818a69f822c7230ce1a37939300a953fba4c858
+Ce diagramme de séquence décrit le flux d'authentification sécurisé d'un utilisateur au sein de l'application via une API REST et un jeton JWT .
 
-**Explication :** ce diagramme montre l'héritage entre `User` et les trois rôles (`Admin`, `Transporteur`, `Expediteur`), ainsi que les relations entre `Trajet`, `Cargaison` et `Reservation`, cette dernière servant de lien central entre une cargaison et le trajet sur lequel elle est réservée.
-
-### 6.3 Diagramme de séquence (Sequence Diagram)
-
-Ce diagramme détaille le déroulement chronologique du processus de réservation et de paiement, depuis la création de la réservation jusqu'à la confirmation de la livraison.
-
-```md
-
-```
-
-**Explication :** ce diagramme montre les échanges entre l'Expéditeur, le Transporteur et le système lors des étapes clés : création de la réservation, acceptation par le transporteur, enregistrement du paiement, et mise à jour automatique du statut de la cargaison et du trajet.
-
-> **Note :** placez vos fichiers image dans le dossier `docs/uml/` à la racine du dépôt, avec exactement ces noms de fichiers (`use-case-diagram.png`, `class-diagram.png`, `sequence-diagram.png`), afin que les liens ci-dessus s'affichent correctement sur GitHub.
-
----
+<img width="443" height="395" alt="image" src="https://github.com/user-attachments/assets/26133c00-eef4-4093-b3f5-8f62c7ab432e" />
 
 ## 7. Contribution personnelle
 
