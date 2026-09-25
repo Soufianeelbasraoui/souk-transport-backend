@@ -1,6 +1,6 @@
 # Souk Transport — Backend
 
-Plateforme B2B de transport collaboratif au Maroc. API REST permettant de mettre en relation transporteurs et expéditeurs pour optimiser le remplissage des camions et réduire les coûts logistiques.
+Plateforme de transport collaboratif au Maroc. API REST permettant de mettre en relation transporteurs et expéditeurs pour optimiser le remplissage des camions et réduire les coûts logistiques.
 
 ---
 
