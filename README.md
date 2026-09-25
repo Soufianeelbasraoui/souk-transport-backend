@@ -143,6 +143,7 @@ Ce diagramme présente le processus de connexion d'un utilisateur. Il montre la 
 #### 6.3.2 Publication d'un trajet
 
 Ce diagramme de séquence décrit le processus de création d'un trajet par un transporteur, incluant la vérification du jeton JWT, le contrôle des autorisations et l'enregistrement du trajet en base de données.
+
 <img width="503" height="350" alt="piblierTrajet" src="https://github.com/user-attachments/assets/7f8012bf-3bd4-4d75-bb5c-907a36a1f6af" />
 
 #### 6.3.4 Gestion des Paiements
