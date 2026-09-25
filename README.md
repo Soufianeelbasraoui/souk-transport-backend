@@ -131,11 +131,26 @@ Le diagramme de classes présente les principales entités du système et leurs 
 
 <img width="571" height="350" alt="Capture d&#39;écran 2026-09-22 174818" src="https://github.com/user-attachments/assets/8f8f9629-2795-4332-945b-374e6717c6b9" />
 
-### 6.3 Diagramme de séquence
+### 6.3 Diagrammes de séquence
 
-Ce diagramme de séquence décrit le flux d'authentification sécurisé d'un utilisateur au sein de l'application via une API REST et un jeton JWT .
+Les diagrammes de séquence présentent les principaux scénarios métier de l'application et montrent les interactions entre l'utilisateur, le frontend, l'API REST, les services métier et la base de données.
 
+#### 6.3.1 Authentification
+
+Ce diagramme présente le processus de connexion d'un utilisateur. Il montre la vérification des identifiants, l'authentification avec Spring Security et la génération du token JWT.
 <img width="443" height="395" alt="image" src="https://github.com/user-attachments/assets/26133c00-eef4-4093-b3f5-8f62c7ab432e" />
+
+#### 6.3.2 Publication d'un trajet
+
+Ce diagramme de séquence décrit le processus de création d'un trajet par un transporteur, incluant la vérification du jeton JWT, le contrôle des autorisations et l'enregistrement du trajet en base de données.
+<img width="503" height="350" alt="piblierTrajet" src="https://github.com/user-attachments/assets/7f8012bf-3bd4-4d75-bb5c-907a36a1f6af" />
+
+#### 6.3.4 Gestion des Paiements
+
+Ce diagramme illustre le processus de paiement d'une réservation, depuis l'initiation par l'expéditeur jusqu'à l'enregistrement du paiement et la génération du reçu PDF en cas de succès.
+
+<img width="555" height="410" alt="Gestion des Paiements" src="https://github.com/user-attachments/assets/9de59174-07bc-4335-a786-7e08a89d5eea" />
+
 
 ## 7. Contribution personnelle
 
