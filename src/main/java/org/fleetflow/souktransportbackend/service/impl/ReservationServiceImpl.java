@@ -118,25 +118,6 @@ public class ReservationServiceImpl implements ReservationService {
         return reservationRepository.findAll(pageable).map(reservationMapper::toDto);
     }
 
-//    @Override
-//    @Transactional(readOnly = true)
-//    public List<ReservationDto> listerParTrajet(Long trajetId) {
-//        return reservationRepository.findByTrajetId(trajetId).stream().map(reservationMapper::toDto).toList();
-//    }
-//
-//    @Override
-//    @Transactional(readOnly = true)
-//    public List<ReservationDto> listerParCargaison(Long cargaisonId) {
-//        return reservationRepository.findByCargaisonId(cargaisonId).stream().map(reservationMapper::toDto).toList();
-//    }
-
-//    @Override
-//    @Transactional(readOnly = true)
-//    public Long countReservationsExpediteur(String email) {
-//
-//        User expediteur = expediteurRepository.findByEmail(email).orElseThrow(() -> new EntityNotFoundException("Expéditeur introuvable."));
-//        return reservationRepository.countByCargaisonExpediteurId(expediteur.getId());
-//    }
 
     @Override
     @Transactional(readOnly = true)

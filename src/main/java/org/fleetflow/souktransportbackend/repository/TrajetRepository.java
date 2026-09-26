@@ -13,7 +13,6 @@ public interface TrajetRepository extends JpaRepository<Trajet, Long> {
 
     List<Trajet> findByStatutTrajet(StatutTrajet statutTrajet);
     Page<Trajet> findByStatutTrajetOrderByDateDepartDesc(StatutTrajet statutTrajet, Pageable pageable);
-    List<Trajet> findByCamionTransporteurId(Long transporteurId);
     Page<Trajet> findByCamionTransporteurId(Long transporteurId, Pageable pageable);
     Long countByCamionTransporteurId(Long id);
 

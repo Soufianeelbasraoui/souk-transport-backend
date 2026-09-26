@@ -13,4 +13,5 @@ public interface PaiementService {
     void supprimerPaiement(Long id);
     Page<PaiementDto> listerPaiements( int page,int size );
     PaiementDto trouverParCargaison(Long cargaisonId);
+    Double countRevenuTransporteur(String email);
 }

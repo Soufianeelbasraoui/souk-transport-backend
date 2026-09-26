@@ -14,12 +14,8 @@ public interface ReservationService {
     ReservationDto consulterReservation(Long id);
     Page<ReservationDto> listerReservations(int page,int size);
 
-//    List<ReservationDto> listerParTrajet(Long trajetId);
-//    List<ReservationDto> listerParCargaison(Long cargaisonId);
 
-//Long countReservationsExpediteur(String email);
     Long countReservationsTransporteur(String email);
-
     ReservationDto accepterReservation(Long reservationId);
     ReservationDto refuserReservation(Long reservationId);
     ReservationDto annulerReservation(Long reservationId);

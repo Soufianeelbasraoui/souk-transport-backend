@@ -14,7 +14,6 @@ public interface CamionRepository extends JpaRepository<Camion, Long> {
     boolean existsByImmatriculationAndIdNot(String immatriculation, Long id);
     Page<Camion> findByTransporteurId(Long transporteurId, Pageable pageable);
     List<Camion> findByTransporteurIdAndType(Long transporteurId, TypeCamion type);
-    List<Camion> findByTransporteurIdAndCapaciteGreaterThanEqual(Long transporteurId, Double capacite);
 
     Page<Camion> findByMarqueContainingIgnoreCase(String marque, Pageable pageable);
 

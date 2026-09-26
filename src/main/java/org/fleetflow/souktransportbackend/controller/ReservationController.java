@@ -71,30 +71,12 @@ public class ReservationController {
         return ResponseEntity.ok(reservationService.listerReservations(page, size));
     }
 
-//    @GetMapping("/trajet/{trajetId}")
-//    @PreAuthorize("hasAnyRole('ADMIN', 'EXPEDITEUR', 'TRANSPORTEUR')")
-//    public ResponseEntity<List<ReservationDto>> listerParTrajet(@PathVariable Long trajetId) {
-//        return ResponseEntity.ok(reservationService.listerParTrajet(trajetId));
-//    }
-//
-//    @GetMapping("/cargaison/{cargaisonId}")
-//    @PreAuthorize("hasAnyRole('ADMIN', 'EXPEDITEUR', 'TRANSPORTEUR')")
-//    public ResponseEntity<List<ReservationDto>> listerParCargaison(@PathVariable Long cargaisonId) {
-//        return ResponseEntity.ok(reservationService.listerParCargaison(cargaisonId));
-//    }
-
-
     @GetMapping("/transporteur/count")
     @PreAuthorize("hasRole('TRANSPORTEUR')")
     public ResponseEntity<Long> countMesReservationsTransporteur(Authentication authentication) {
         return ResponseEntity.ok(reservationService.countReservationsTransporteur(authentication.getName()));
     }
-//
-//    @GetMapping("/expediteur/count")
-//    @PreAuthorize("hasRole('EXPEDITEUR')")
-//    public ResponseEntity<Long> countMesReservationsExpediteur(Authentication authentication) {
-//        return ResponseEntity.ok(reservationService.countReservationsExpediteur(authentication.getName()));
-//    }
+
 
     @GetMapping("/transporteur/mes-reservations")
     @PreAuthorize("hasRole('TRANSPORTEUR')")

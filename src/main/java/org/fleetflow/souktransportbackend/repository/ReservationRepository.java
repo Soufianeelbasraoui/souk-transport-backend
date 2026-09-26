@@ -13,9 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
-//    Optional<Reservation> findByCargaison_Id(Long cargaisonId);
 
-    List<Reservation> findByTrajetId(Long trajetId);
     List<Reservation> findByCargaisonId(Long cargaisonId);
 
     long countByTrajetCamionTransporteurId(Long transporteurId);

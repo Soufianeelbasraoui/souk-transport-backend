@@ -4,18 +4,10 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.fleetflow.souktransportbackend.dto.request.PaiementRequestDto;
 import org.fleetflow.souktransportbackend.dto.response.PaiementDto;
-import org.fleetflow.souktransportbackend.entity.Camion;
-import org.fleetflow.souktransportbackend.entity.Cargaison;
-import org.fleetflow.souktransportbackend.entity.Paiement;
-import org.fleetflow.souktransportbackend.entity.Reservation;
-import org.fleetflow.souktransportbackend.entity.Trajet;
+import org.fleetflow.souktransportbackend.entity.*;
 import org.fleetflow.souktransportbackend.enums.*;
 import org.fleetflow.souktransportbackend.mapper.PaiementMapper;
-import org.fleetflow.souktransportbackend.repository.CamionRepository;
-import org.fleetflow.souktransportbackend.repository.CargaisonRepository;
-import org.fleetflow.souktransportbackend.repository.PaiementRepository;
-import org.fleetflow.souktransportbackend.repository.ReservationRepository;
-import org.fleetflow.souktransportbackend.repository.TrajetRepository;
+import org.fleetflow.souktransportbackend.repository.*;
 import org.fleetflow.souktransportbackend.service.PaiementService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -35,6 +27,7 @@ public class PaiementServiceImpl implements PaiementService {
     private final CargaisonRepository cargaisonRepository;
     private final TrajetRepository trajetRepository;
     private final CamionRepository camionRepository;
+    private final UserRepository userRepository;
 
     @Override
     @Transactional
@@ -151,5 +144,12 @@ public class PaiementServiceImpl implements PaiementService {
     public PaiementDto trouverParCargaison(Long cargaisonId) {
         Paiement paiement = paiementRepository .findByReservation_Cargaison_Id(cargaisonId).orElseThrow(() -> new EntityNotFoundException("Paiement introuvable pour la cargaison : "   + cargaisonId));
         return paiementMapper.toDto(paiement);
+    }
+
+    @Override
+    @Transactional
+    public Double countRevenuTransporteur(String email){
+        User trasporteur=userRepository.findByEmail(email).orElseThrow(()->new EntityNotFoundException("Transporteur introuvable."));
+        return paiementRepository.countRevenuByTransporteurId(trasporteur.getId());
     }
 }

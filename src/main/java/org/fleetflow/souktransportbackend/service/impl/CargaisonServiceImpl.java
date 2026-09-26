@@ -109,13 +109,6 @@ public class CargaisonServiceImpl implements CargaisonService {
         Pageable pageable = PageRequest.of(page, size);
         return cargaisonRepository.findAll(pageable).map(cargaisonMapper::toDto);
     }
-//
-//    @Override
-//    public List<CargaisonDto> listerParTrajet(Long trajetId) {
-//        return cargaisonMapper.toDtoList(cargaisonRepository.findByReservations_Trajet_Id(trajetId));
-//    }
-
-
 
     @Override
     @Transactional(readOnly = true)
