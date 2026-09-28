@@ -16,7 +16,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Expediteur extends User {
-
     private String nomEntreprise;
     private String adresseEntreprise;
 

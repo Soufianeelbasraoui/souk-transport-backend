@@ -107,8 +107,14 @@ public class PaiementServiceImpl implements PaiementService {
         }
 
         List<Cargaison> cargaisons =  cargaisonRepository.findByReservations_Trajet_Id(trajet.getId());
-        boolean toutesLivrees = cargaisons.stream().allMatch(c -> c.getStatutCargaison() == StatutCargaison.LIVREE);
 
+        boolean toutesLivrees = true;
+        for (Cargaison c : cargaisons) {
+            if (c.getStatutCargaison() != StatutCargaison.LIVREE) {
+                toutesLivrees = false;
+                break;
+            }
+        }
         if (toutesLivrees) {
             trajet.setStatutTrajet(StatutTrajet.TERMINE);
             trajetRepository.save(trajet);

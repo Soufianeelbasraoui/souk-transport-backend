@@ -74,11 +74,9 @@ class CargaisonServiceImplTest {
 
         assertEquals(1, result.getContent().size());
 
-        verify(cargaisonRepository)
-                .findAll(pageable);
+        verify(cargaisonRepository).findAll(pageable);
 
-        verify(cargaisonMapper)
-                .toDto(cargaison);
+        verify(cargaisonMapper).toDto(cargaison);
     }
 
     @Test

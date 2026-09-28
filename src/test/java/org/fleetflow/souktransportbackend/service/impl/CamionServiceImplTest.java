@@ -110,14 +110,11 @@ class CamionServiceImplTest {
 
         verify(camionRepository) .existsByImmatriculationAndIdNot(  "DEF-456",   camionId );
 
-        verify(camionMapper)
-                .updateEntityFromDto(request, camion);
+        verify(camionMapper).updateEntityFromDto(request, camion);
 
-        verify(camionRepository)
-                .save(camion);
+        verify(camionRepository).save(camion);
 
-        verify(camionMapper)
-                .toDto(camion);
+        verify(camionMapper).toDto(camion);
     }
 
 

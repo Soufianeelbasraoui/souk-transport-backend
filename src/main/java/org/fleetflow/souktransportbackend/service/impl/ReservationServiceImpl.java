@@ -16,6 +16,7 @@ import org.springframework.data.domain.*;
         import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -46,8 +47,14 @@ public class ReservationServiceImpl implements ReservationService {
         if (trajet.getPoidsDisponible() < cargaison.getPoids())
             throw new IllegalStateException("Poids disponible insuffisant.");
 
-        boolean existe = reservationRepository.findByCargaisonId(cargaison.getId()).stream().anyMatch(r -> r.getStatutReservation() == StatutReservation.EN_ATTENTE || r.getStatutReservation() == StatutReservation.ACCEPTEE);
-
+        boolean existe=false;
+        List<Reservation> reservations=reservationRepository.findByCargaisonId(cargaison.getId());
+        for (Reservation r:reservations){
+            if (r.getStatutReservation()==StatutReservation.EN_ATTENTE ||r.getStatutReservation()==StatutReservation.ACCEPTEE){
+                existe=true;
+                break;
+            }
+        }
         if (existe) throw new IllegalStateException("Cette cargaison possède déjà une réservation.");
 
         Reservation reservation = reservationMapper.toEntity(dto);
@@ -146,10 +153,14 @@ public class ReservationServiceImpl implements ReservationService {
         if (trajet.getPoidsDisponible() < poids) {
             throw new IllegalStateException("Poids disponible insuffisant.");
         }
+        List<Reservation> autres=new ArrayList<>();
+        List<Reservation> reservations=reservationRepository.findByCargaisonId(cargaison.getId());
+        for (Reservation r:reservations){
+            if (!r.getId().equals(reservationId)&&r.getStatutReservation()==StatutReservation.ACCEPTEE){
+                autres.add(r);
+            }
 
-        List<Reservation> autres = reservationRepository.findByCargaisonId(cargaison.getId())
-                .stream()
-                .filter(r -> !r.getId().equals(reservationId) && r.getStatutReservation() == StatutReservation.EN_ATTENTE).toList();
+        }
         autres.forEach(r -> r.setStatutReservation(StatutReservation.REFUSEE));
         reservationRepository.saveAll(autres);
         trajet.setPoidsDisponible(trajet.getPoidsDisponible() - poids);
@@ -167,7 +178,7 @@ public class ReservationServiceImpl implements ReservationService {
     @Transactional
     public ReservationDto refuserReservation(Long reservationId) {
 
-        Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(() -> new EntityNotFoundException("Réservation introuvable : " + reservationId));
+        Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(() -> new EntityNotFoundException("Réservation introuvable" ));
         if (reservation.getStatutReservation() != StatutReservation.EN_ATTENTE)
             throw new IllegalStateException("Cette réservation ne peut plus être refusée.");
         reservation.setStatutReservation(StatutReservation.REFUSEE);
@@ -178,7 +189,7 @@ public class ReservationServiceImpl implements ReservationService {
     @Transactional
     public ReservationDto annulerReservation(Long reservationId) {
 
-        Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(() -> new EntityNotFoundException("Réservation introuvable : " + reservationId));
+        Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(() -> new EntityNotFoundException("Réservation introuvable" ));
         if (reservation.getStatutReservation() == StatutReservation.ANNULEE){
             throw new IllegalStateException("Réservation déjà annulée.");
         }

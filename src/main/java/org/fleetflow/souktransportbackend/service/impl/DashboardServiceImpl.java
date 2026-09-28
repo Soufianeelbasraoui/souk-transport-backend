@@ -24,7 +24,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class DashboardAdminServiceImpl implements DashboardService {
+public class DashboardServiceImpl implements DashboardService {
 
     private final UserRepository userRepository;
     private final TrajetRepository trajetRepository;

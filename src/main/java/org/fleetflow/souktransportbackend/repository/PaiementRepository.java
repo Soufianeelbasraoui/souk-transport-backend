@@ -12,8 +12,6 @@ public interface PaiementRepository extends JpaRepository<Paiement, Long> {
 
     Optional<Paiement> findByReservation_Cargaison_Id( Long cargaisonId);
     boolean existsByReservationId(Long reservationId);
-//    @Query("SELECT COALESCE(SUM(p.montantTotal), 0) FROM Paiement p WHERE p.statutPaiement = :statut\n")
-//    Double calculerRevenusTotal(  @Param("statut") StatutPaiement statut  );
      @Query("SELECT SUM(p.montantTotal) FROM Paiement p WHERE p.statutPaiement = :statut")
      Double calculerRevenusTotal(@Param("statut") StatutPaiement statut);
 

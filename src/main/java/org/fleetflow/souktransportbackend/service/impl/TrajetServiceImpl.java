@@ -120,7 +120,7 @@ public class TrajetServiceImpl implements TrajetService {
     @Override
     @Transactional(readOnly = true)
     public List<TrajetDto> listerTrajetsPublies() {
-        return trajetRepository.findByStatutTrajet(StatutTrajet.PUBLIE).stream().map(trajetMapper::toDto).toList();
+        return trajetMapper.toDtoList(trajetRepository.findByStatutTrajet(StatutTrajet.PUBLIE));
     }
     @Override
     @Transactional(readOnly = true)
@@ -145,12 +145,14 @@ public class TrajetServiceImpl implements TrajetService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Long countTrajet(String email) {
         User transporteur = userRepository.findByEmail(email).orElseThrow(() -> new EntityNotFoundException("Utilisateur introuvable"));
         return trajetRepository.countByCamionTransporteurId(transporteur.getId());
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<TrajetDto> rechercher(String recherche, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return trajetRepository.findByVilleDepartContainingIgnoreCaseOrVilleArriveeContainingIgnoreCase(recherche, recherche, pageable).map(trajetMapper::toDto);
