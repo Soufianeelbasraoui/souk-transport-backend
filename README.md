@@ -32,7 +32,6 @@ La solution proposée permet aux transporteurs de publier leurs trajets disponib
 - **Enregistrer un paiement** et confirmer la livraison d'une cargaison
 - **Générer un reçu de paiement au format PDF** téléchargeable
 - **Consulter un tableau de bord** (statistiques transporteur et administrateur)
-- **Mettre en cache les données fréquemment consultées** avec Redis pour optimiser les performances
 
 ---
 
@@ -157,7 +156,7 @@ Ce diagramme illustre le processus de paiement d'une réservation, depuis l'init
 
 Ma contribution principale a porté sur la **conception de l'architecture backend** (organisation en couches Controller / Service / Repository) et le **développement du module de réservation et de paiement**, incluant la logique métier de mise à jour en cascade des statuts (cargaison, trajet, camion).
 
-J'ai également travaillé sur la **sécurisation de l'API avec Spring Security et JWT**, ainsi que sur la **mise en place du cache Redis** pour les endpoints les plus consultés.
+J'ai également travaillé sur la **sécurisation de l'API avec Spring Security et JWT.
 
 J'ai été responsable de la **génération des reçus de paiement au format PDF** et de la **mise en place des migrations de base de données avec Flyway**.
 
