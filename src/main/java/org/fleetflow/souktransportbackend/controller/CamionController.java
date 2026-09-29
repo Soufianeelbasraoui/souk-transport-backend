@@ -22,6 +22,7 @@ public class CamionController {
     private final CamionService camionService;
 
     @GetMapping("/types")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TRANSPORTEUR')")
     public ResponseEntity<TypeCamion[]> getTypesCamion() {
         return ResponseEntity.ok(TypeCamion.values());
     }
@@ -90,6 +91,7 @@ public class CamionController {
     }
 
     @GetMapping("/searchByMarque")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<CamionDto>> searchByMarque(@RequestParam String marque, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         return ResponseEntity.ok(camionService.rechercherParMarque(marque, page, size));
     }
